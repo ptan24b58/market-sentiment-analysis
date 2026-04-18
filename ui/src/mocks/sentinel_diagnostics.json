@@ -1,0 +1,6 @@
+{
+  "variances": [0.148, 0.312, 0.271],
+  "bimodality": [0.61, 0.72, 0.68],
+  "gate_pass": true,
+  "parse_failure_rate": 0.021
+}

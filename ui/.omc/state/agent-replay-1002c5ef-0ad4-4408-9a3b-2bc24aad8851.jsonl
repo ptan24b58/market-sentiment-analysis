@@ -1,0 +1,6 @@
+{"t":0,"agent":"a6b64f1","agent_type":"architect","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"ae63af4","agent_type":"security-reviewer","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"aa2e342","agent_type":"code-reviewer","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"ae63af4","agent_type":"security-reviewer","event":"agent_stop","success":true,"duration_ms":114099}
+{"t":0,"agent":"a6b64f1","agent_type":"architect","event":"agent_stop","success":true,"duration_ms":182143}
+{"t":0,"agent":"aa2e342","agent_type":"code-reviewer","event":"agent_stop","success":true,"duration_ms":171347}

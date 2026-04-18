@@ -1,0 +1,143 @@
+{
+  "TSLA": [
+    "Tesla Inc",
+    "Tesla Inc.",
+    "Tesla",
+    "Tesla Motors",
+    "Tesla Motors Inc",
+    "Tesla Motors Inc.",
+    "Tesla, Inc.",
+    "Tesla Inc (TSLA)"
+  ],
+  "XOM": [
+    "Exxon Mobil Corporation",
+    "ExxonMobil",
+    "Exxon",
+    "Exxon Mobil",
+    "Exxon Mobil Corp",
+    "Exxon Mobil Corp.",
+    "ExxonMobil Corporation",
+    "Exxon Mobil Corporation (XOM)"
+  ],
+  "OXY": [
+    "Occidental Petroleum",
+    "Occidental Petroleum Corporation",
+    "Occidental Petroleum Corp",
+    "Occidental Petroleum Corp.",
+    "Oxy",
+    "OXY Petroleum",
+    "Occidental"
+  ],
+  "HAL": [
+    "Halliburton",
+    "Halliburton Company",
+    "Halliburton Co",
+    "Halliburton Co.",
+    "Halliburton Inc",
+    "HAL Energy"
+  ],
+  "SLB": [
+    "Schlumberger",
+    "Schlumberger Limited",
+    "Schlumberger Ltd",
+    "Schlumberger Ltd.",
+    "SLB",
+    "SLB Limited",
+    "Schlumberger NV",
+    "Schlumberger N.V."
+  ],
+  "T": [
+    "AT&T",
+    "AT&T Inc",
+    "AT&T Inc.",
+    "AT&T Corporation",
+    "American Telephone and Telegraph",
+    "American Telephone & Telegraph",
+    "AT&T Communications",
+    "ATT"
+  ],
+  "DELL": [
+    "Dell Technologies",
+    "Dell Technologies Inc",
+    "Dell Technologies Inc.",
+    "Dell",
+    "Dell Inc",
+    "Dell Inc.",
+    "Dell Computer",
+    "Dell Computer Corporation"
+  ],
+  "AAL": [
+    "American Airlines",
+    "American Airlines Group",
+    "American Airlines Group Inc",
+    "American Airlines Group Inc.",
+    "American Airlines Inc",
+    "AAL Group",
+    "American Airlines Holdings"
+  ],
+  "HPE": [
+    "Hewlett Packard Enterprise",
+    "Hewlett Packard Enterprise Company",
+    "Hewlett Packard Enterprise Co",
+    "HPE",
+    "Hewlett-Packard Enterprise",
+    "HP Enterprise"
+  ],
+  "CVX": [
+    "Chevron",
+    "Chevron Corporation",
+    "Chevron Corp",
+    "Chevron Corp.",
+    "Chevron Company",
+    "Chevron USA",
+    "ChevronTexaco",
+    "Chevron Corporation (CVX)"
+  ],
+  "KR": [
+    "Kroger",
+    "Kroger Co",
+    "Kroger Co.",
+    "The Kroger Company",
+    "Kroger Company",
+    "Kroger Inc",
+    "Kroger Stores"
+  ],
+  "WMB": [
+    "Williams Companies",
+    "Williams Companies Inc",
+    "Williams Companies Inc.",
+    "Williams",
+    "Williams Co",
+    "Williams Co.",
+    "The Williams Companies",
+    "Williams Pipeline"
+  ],
+  "EOG": [
+    "EOG Resources",
+    "EOG Resources Inc",
+    "EOG Resources Inc.",
+    "EOG",
+    "EOG Resources Company",
+    "Enron Oil and Gas",
+    "Enron Oil & Gas"
+  ],
+  "VLO": [
+    "Valero Energy",
+    "Valero Energy Corporation",
+    "Valero Energy Corp",
+    "Valero Energy Corp.",
+    "Valero",
+    "Valero Refining",
+    "Valero Energy Company"
+  ],
+  "COP": [
+    "ConocoPhillips",
+    "ConocoPhillips Company",
+    "ConocoPhillips Co",
+    "Conoco Phillips",
+    "Conoco",
+    "ConocoPhillips Corp",
+    "Phillips Petroleum",
+    "Conoco Inc"
+  ]
+}

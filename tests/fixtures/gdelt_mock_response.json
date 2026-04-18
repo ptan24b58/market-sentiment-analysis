@@ -1,0 +1,43 @@
+{
+  "articles": [
+    {
+      "url": "https://www.reuters.com/business/autos/tesla-recalls-vehicles-2024-10-15/",
+      "url_mobile": "",
+      "title": "Tesla recalls 50000 vehicles over autopilot safety concerns amid regulatory pressure",
+      "seendate": "20241015T143000Z",
+      "socialimage": "",
+      "domain": "reuters.com",
+      "language": "English",
+      "sourcecountry": "United States",
+      "tone": "-7.5",
+      "categories": ["ENV_ELECVEHIC", "GOV_REGS", "CRISISLEX_C01_SERIOUSINJURY"],
+      "entity_confidence": 0.95
+    },
+    {
+      "url": "https://www.bloomberg.com/news/articles/2024-10-20/tesla-autonomous-driving",
+      "url_mobile": "",
+      "title": "Tesla autonomous driving breakthrough receives positive regulatory outlook",
+      "seendate": "20241020T091500Z",
+      "socialimage": "",
+      "domain": "bloomberg.com",
+      "language": "English",
+      "sourcecountry": "United States",
+      "tone": "5.2",
+      "categories": ["ENV_ELECVEHIC", "GOV_REGS"],
+      "entity_confidence": 0.90
+    },
+    {
+      "url": "https://www.wsj.com/articles/tesla-esg-report-2024",
+      "url_mobile": "",
+      "title": "Tesla ESG report shows significant emissions reductions beating industry benchmarks",
+      "seendate": "20241101T120000Z",
+      "socialimage": "",
+      "domain": "wsj.com",
+      "language": "English",
+      "sourcecountry": "United States",
+      "tone": "8.1",
+      "categories": ["ENV_SUSTAIN", "ESG"],
+      "entity_confidence": 0.88
+    }
+  ]
+}
