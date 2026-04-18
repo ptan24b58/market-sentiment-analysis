@@ -1,0 +1,14 @@
+{"t":0,"agent":"system","event":"keyword_detected","keyword":"deep-interview"}
+{"t":0,"agent":"system","event":"skill_invoked","skill_name":"oh-my-claudecode:ralplan"}
+{"t":0,"agent":"a39a0c5","agent_type":"planner","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"a39a0c5","agent_type":"planner","event":"agent_stop","success":true,"duration_ms":290112}
+{"t":0,"agent":"a662cde","agent_type":"architect","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"a662cde","agent_type":"architect","event":"agent_stop","success":true,"duration_ms":164178}
+{"t":0,"agent":"ab7b5ea","agent_type":"critic","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"ab7b5ea","agent_type":"critic","event":"agent_stop","success":true,"duration_ms":313527}
+{"t":0,"agent":"aa6db1d","agent_type":"planner","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"aa6db1d","agent_type":"planner","event":"agent_stop","success":true,"duration_ms":469995}
+{"t":0,"agent":"a6378ae","agent_type":"architect","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"a6378ae","agent_type":"architect","event":"agent_stop","success":true,"duration_ms":80464}
+{"t":0,"agent":"a544088","agent_type":"critic","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"a544088","agent_type":"critic","event":"agent_stop","success":true,"duration_ms":97883}

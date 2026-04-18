@@ -1,0 +1,7 @@
+We are at a UT hackathon which is 2 days and we are using claude code to make our project. We are doing the finance track and trying to impress Jane Street and JRT judges. Our core idea is to    
+use LLMs with prompts telling them they are different people representative of a real population like Texas in order to predict market sentiment to news about different companies, which seems like it could be useful as an input   
+for trading. For example, who reacts to news about Tesla building a terrafab in austin, if at all. Dimensions to consider might be political stances, income, geographic location etc. We need to figure out what to backtest our LLM 
+ simulation on that their industry considers a reliable sentiment analysis indicator. Also, a naive LLM distribution seems like it would discount the effect of social interactions, so we want some sort of social graph baked into  
+this. The core UI element we were going to show was a graph of the united states or Texas with the color of the sentiment reaction by geographic distribution, with side panels for things like reaction by income or political       
+affiliation etc. At the top would be the real headline news the LLMs are reacting to. We would need to use news just past the LLMs training cutoff threshold, and probably use very small models. We have AWS credits, there wasn't a 
+ clear cap but scope compute to a student hackathon. search the web to gather info. First, what quesitons about this project do you have for me? 
