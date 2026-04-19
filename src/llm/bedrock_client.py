@@ -27,6 +27,7 @@ from typing import Any, Dict, Optional
 
 from src.config import (
     BEDROCK_BASE_BACKOFF_SECONDS,
+    BEDROCK_CONCURRENT_SEMAPHORE,
     BEDROCK_MAX_BACKOFF_SECONDS,
     BEDROCK_MODEL_ID,
     BEDROCK_REGION,
@@ -50,10 +51,23 @@ _client_lock = asyncio.Lock()
 
 
 def _make_boto_client():
-    """Lazy boto3 client factory; raises if boto3 not installed."""
-    import boto3  # noqa: WPS433  intentional lazy import
+    """Lazy boto3 client factory; raises if boto3 not installed.
 
-    return boto3.client("bedrock-runtime", region_name=BEDROCK_REGION)
+    Sizes the HTTP connection pool to match the async semaphore so concurrent
+    invoke_model calls don't churn connections. Boto3's default is 10 which is
+    far below our live concurrency (BEDROCK_CONCURRENT_SEMAPHORE).
+    """
+    import boto3  # noqa: WPS433  intentional lazy import
+    from botocore.config import Config  # noqa: WPS433
+
+    # Keep a little headroom above the semaphore for retries / reaper.
+    pool_size = max(BEDROCK_CONCURRENT_SEMAPHORE + 5, 20)
+    cfg = Config(
+        region_name=BEDROCK_REGION,
+        max_pool_connections=pool_size,
+        retries={"mode": "standard", "max_attempts": 1},  # our wrapper does retries
+    )
+    return boto3.client("bedrock-runtime", config=cfg)
 
 
 async def _get_client():
