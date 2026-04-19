@@ -341,6 +341,12 @@
       "type": "directory"
     },
     {
+      "path": "src/api/stratified.py",
+      "accessCount": 2,
+      "lastAccessed": 1776588931232,
+      "type": "file"
+    },
+    {
       "path": "ui/package.json",
       "accessCount": 1,
       "lastAccessed": 1776584277148,
@@ -398,6 +404,12 @@
       "path": "ui/src/components/SidePanels",
       "accessCount": 1,
       "lastAccessed": 1776587868075,
+      "type": "directory"
+    },
+    {
+      "path": "src/api/simulate.py",
+      "accessCount": 1,
+      "lastAccessed": 1776588813350,
       "type": "directory"
     }
   ],

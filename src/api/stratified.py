@@ -1,16 +1,15 @@
 """Deterministic stratified sampling over a list of persona dicts.
 
-Splits personas into buckets by `key`, picks ceil(n / num_keys) from each
-bucket (shuffled with `seed`), concatenates and truncates to exactly `n`.
+Round-robin across `key` buckets: every bucket gets one persona before
+any bucket gets a second. This guarantees every bucket value is represented
+in the sample as long as the sample size >= number of buckets.
 
-If any bucket has fewer personas than the per-bucket quota, all of that
-bucket is taken and the overall count may fall short of n — this is
-intentional and documented here so callers can handle it downstream.
+If any bucket runs out of personas, it's skipped on subsequent rounds.
+Returns exactly `n` personas (or fewer if the total pool is smaller than `n`).
 """
 
 from __future__ import annotations
 
-import math
 import random
 from typing import Any
 
@@ -21,7 +20,14 @@ def stratified_sample(
     key: str = "zip_region",
     seed: int = 7,
 ) -> list[dict[str, Any]]:
-    """Return up to `n` personas sampled proportionally from each `key` bucket.
+    """Return up to `n` personas, round-robin across buckets keyed on `key`.
+
+    Every unique value of `key` is guaranteed at least one sample so long as
+    that bucket is non-empty AND n >= num_keys. Remaining picks continue
+    round-robin, cycling through buckets in their original insertion order,
+    so the sample stays proportional in the limit without starving small
+    buckets (the earlier ceil-truncate approach dropped 2 regions at n=60
+    across 14 regions).
 
     Parameters
     ----------
@@ -44,20 +50,35 @@ def stratified_sample(
     # Build buckets preserving insertion order of first appearance.
     buckets: dict[str, list[dict[str, Any]]] = {}
     for p in personas:
-        val = p[key]
-        buckets.setdefault(val, []).append(p)
+        buckets.setdefault(p[key], []).append(p)
 
-    num_keys = len(buckets)
-    if num_keys == 0:
+    if not buckets:
         return []
 
-    per_bucket = math.ceil(n / num_keys)
-
-    collected: list[dict[str, Any]] = []
+    # Shuffle each bucket so picks within a bucket are random.
     for bucket in buckets.values():
-        shuffled = bucket[:]
-        rng.shuffle(shuffled)
-        collected.extend(shuffled[:per_bucket])
+        rng.shuffle(bucket)
 
-    # Truncate to exactly n (or fewer if total < n due to small buckets).
-    return collected[:n]
+    # Round-robin pop from each bucket. One pass = 1 per bucket; then repeat.
+    collected: list[dict[str, Any]] = []
+    indices = {k: 0 for k in buckets}
+    keys_in_order = list(buckets.keys())
+    # Safety bound: can't collect more than total personas available.
+    max_possible = sum(len(b) for b in buckets.values())
+    target = min(n, max_possible)
+
+    while len(collected) < target:
+        any_added = False
+        for k in keys_in_order:
+            if len(collected) >= target:
+                break
+            i = indices[k]
+            if i < len(buckets[k]):
+                collected.append(buckets[k][i])
+                indices[k] = i + 1
+                any_added = True
+        if not any_added:
+            # All buckets exhausted.
+            break
+
+    return collected
