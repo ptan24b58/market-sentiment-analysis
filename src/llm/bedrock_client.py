@@ -82,11 +82,11 @@ def _build_payload(
         # Anthropic's prompt caching marker. Cache TTL defaults to 5 min.
         # Bedrock silently ignores this if the model doesn't support caching.
         system_block["cache_control"] = {"type": "ephemeral"}
+    # Claude Sonnet 4.5 rejects top_p + temperature together; keep temperature only.
     return {
         "anthropic_version": "bedrock-2023-05-31",
         "max_tokens": 32,
         "temperature": 0.7,
-        "top_p": 0.9,
         "system": [system_block],
         "messages": [
             {
