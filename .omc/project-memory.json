@@ -203,6 +203,12 @@
       "type": "file"
     },
     {
+      "path": "ui/src/components/SidePanels/GeographyPanel.tsx",
+      "accessCount": 9,
+      "lastAccessed": 1776589385953,
+      "type": "file"
+    },
+    {
       "path": "ui/src/components/PhaseIndicator.tsx",
       "accessCount": 6,
       "lastAccessed": 1776588288553,
@@ -248,12 +254,6 @@
       "path": "ui/src/components/SidePanels/PoliticalPanel.tsx",
       "accessCount": 4,
       "lastAccessed": 1776587940367,
-      "type": "file"
-    },
-    {
-      "path": "ui/src/components/SidePanels/GeographyPanel.tsx",
-      "accessCount": 4,
-      "lastAccessed": 1776587942021,
       "type": "file"
     },
     {

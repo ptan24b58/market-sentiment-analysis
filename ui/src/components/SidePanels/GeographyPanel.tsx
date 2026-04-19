@@ -14,23 +14,16 @@ interface GeographyPanelProps {
   personas: Persona[]
 }
 
-const TX_REGIONS = [
-  'Austin Metro',
-  'Houston Metro',
-  'DFW',
-  'San Antonio Metro',
-  'Permian Basin',
-  'Rio Grande Valley',
-  'East Texas',
-  'Panhandle',
-] as const
-
-type TxRegion = (typeof TX_REGIONS)[number]
+interface RegionRow {
+  region: string
+  mean: number
+  count: number
+}
 
 function aggregateByRegion(
   sentiments: PersonaSentiment[],
   personas: Persona[]
-): Map<TxRegion, { mean: number; count: number }> {
+): RegionRow[] {
   const bins = new Map<string, { sum: number; count: number }>()
 
   for (const s of sentiments) {
@@ -41,11 +34,15 @@ function aggregateByRegion(
     bins.set(region, { sum: existing.sum + s.raw_sentiment, count: existing.count + 1 })
   }
 
-  const result = new Map<TxRegion, { mean: number; count: number }>()
-  bins.forEach((v, k) => {
-    result.set(k as TxRegion, { mean: v.sum / v.count, count: v.count })
+  const rows: RegionRow[] = []
+  bins.forEach((v, region) => {
+    rows.push({ region, mean: v.sum / v.count, count: v.count })
   })
-  return result
+  // Sort by count descending so the largest regions show first; thin-data
+  // regions (e.g. Big Bend) fall to the bottom where their high variance is
+  // less visually dominant.
+  rows.sort((a, b) => b.count - a.count || a.region.localeCompare(b.region))
+  return rows
 }
 
 function BarRow({ label, value, count }: { label: string; value: number; count: number }) {
@@ -105,16 +102,17 @@ export function GeographyPanel({ sentiments, personas }: GeographyPanelProps) {
       <CardContent className="py-2 px-3">
         {sentiments.length === 0 ? (
           <p className="text-xs text-fg-ghost">No data</p>
-        ) : agg.size === 0 ? (
+        ) : agg.length === 0 ? (
           <p className="text-xs text-fg-ghost">No region data</p>
         ) : (
-          TX_REGIONS.map((region) => {
-            const data = agg.get(region)
-            if (!data) return null
-            return (
-              <BarRow key={region} label={region} value={data.mean} count={data.count} />
-            )
-          })
+          agg.map((row) => (
+            <BarRow
+              key={row.region}
+              label={row.region}
+              value={row.mean}
+              count={row.count}
+            />
+          ))
         )}
       </CardContent>
     </Card>
