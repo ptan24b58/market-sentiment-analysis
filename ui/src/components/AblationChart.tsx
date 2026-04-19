@@ -7,20 +7,18 @@ interface AblationChartProps {
 }
 
 const PIPELINES = [
-  { key: 'lm_dictionary'  as const, label: 'L-M Dict' },
-  { key: 'finbert'        as const, label: 'FinBERT' },
-  { key: 'nova_zero_shot' as const, label: 'Zero-Shot' },
-  { key: 'persona_only'   as const, label: 'Persona' },
-  { key: 'persona_graph'  as const, label: 'P+Graph' },
+  { key: 'lm_dictionary'  as const, label: 'L-M Dict',  color: 'var(--pipeline-lm)' },
+  { key: 'finbert'        as const, label: 'FinBERT',   color: 'var(--pipeline-finbert)' },
+  { key: 'nova_zero_shot' as const, label: 'Zero-Shot', color: 'var(--pipeline-zeroshot)' },
+  { key: 'persona_only'   as const, label: 'Persona',   color: 'var(--pipeline-persona)' },
+  { key: 'persona_graph'  as const, label: 'P+Graph',   color: 'var(--pipeline-graph)' },
 ]
 
-const BAR_COLORS = ['#475569', '#64748b', '#3b82f6', '#22c55e', '#10b981']
-
-const SVG_WIDTH  = 480
+const SVG_WIDTH = 480
 const SVG_HEIGHT = 200
-const MARGIN     = { top: 20, right: 20, bottom: 40, left: 50 }
-const INNER_W    = SVG_WIDTH  - MARGIN.left - MARGIN.right
-const INNER_H    = SVG_HEIGHT - MARGIN.top  - MARGIN.bottom
+const MARGIN = { top: 20, right: 20, bottom: 40, left: 50 }
+const INNER_W = SVG_WIDTH - MARGIN.left - MARGIN.right
+const INNER_H = SVG_HEIGHT - MARGIN.top - MARGIN.bottom
 
 export default function AblationChart({ data }: AblationChartProps) {
   const pt = data.primary_table
@@ -42,7 +40,7 @@ export default function AblationChart({ data }: AblationChartProps) {
   }
 
   return (
-    <div className="bg-[#1e293b] rounded border border-slate-700 p-4" aria-label="Pearson IC bar chart">
+    <div className="bg-surface-panel rounded border border-border p-4" aria-label="Pearson IC bar chart">
       <svg
         viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`}
         width="100%"
@@ -50,7 +48,6 @@ export default function AblationChart({ data }: AblationChartProps) {
         aria-label="Bar chart of Pearson IC per pipeline"
       >
         <g transform={`translate(${MARGIN.left},${MARGIN.top})`}>
-          {/* Y-axis gridlines */}
           {[0, 0.1, 0.2, 0.3, 0.4].map((v) => {
             if (v > maxVal) return null
             const y = yScale(v)
@@ -58,14 +55,15 @@ export default function AblationChart({ data }: AblationChartProps) {
               <g key={v}>
                 <line
                   x1={0} y1={y} x2={INNER_W} y2={y}
-                  stroke="#334155" strokeWidth={1}
+                  stroke="var(--border)" strokeWidth={1}
                   strokeDasharray={v === 0 ? 'none' : '3,3'}
                 />
                 <text
                   x={-6} y={y + 4}
                   textAnchor="end"
                   fontSize={9}
-                  fill="#64748b"
+                  fill="var(--fg-faint)"
+                  fontFamily="var(--font-mono)"
                 >
                   {v.toFixed(2)}
                 </text>
@@ -73,11 +71,10 @@ export default function AblationChart({ data }: AblationChartProps) {
             )
           })}
 
-          {/* Bars */}
           {PIPELINES.map((pipeline, i) => {
-            const v   = values[i]
-            const pv  = pvalues[i]
-            const x   = i * (INNER_W / PIPELINES.length) + (INNER_W / PIPELINES.length - barWidth) / 2
+            const v = values[i]
+            const pv = pvalues[i]
+            const x = i * (INNER_W / PIPELINES.length) + (INNER_W / PIPELINES.length - barWidth) / 2
             const barH = (v / maxVal) * INNER_H
             const barY = INNER_H - barH
 
@@ -88,39 +85,36 @@ export default function AblationChart({ data }: AblationChartProps) {
                   y={barY}
                   width={barWidth}
                   height={barH}
-                  fill={BAR_COLORS[i]}
+                  fill={pipeline.color}
                   rx={2}
                 />
-                {/* IC value label */}
                 <text
                   x={x + barWidth / 2}
                   y={barY - 4}
                   textAnchor="middle"
                   fontSize={9}
-                  fill="#cbd5e1"
-                  fontFamily="monospace"
+                  fill="var(--fg-muted)"
+                  fontFamily="var(--font-mono)"
                 >
                   {v.toFixed(3)}
                 </text>
-                {/* Significance stars */}
                 {starsStr(pv) && (
                   <text
                     x={x + barWidth / 2}
                     y={barY - 14}
                     textAnchor="middle"
                     fontSize={9}
-                    fill="#fbbf24"
+                    fill="var(--accent-amber-light)"
                   >
                     {starsStr(pv)}
                   </text>
                 )}
-                {/* X-axis label */}
                 <text
                   x={x + barWidth / 2}
                   y={INNER_H + 14}
                   textAnchor="middle"
                   fontSize={9}
-                  fill="#94a3b8"
+                  fill="var(--fg-dim)"
                 >
                   {pipeline.label}
                 </text>
@@ -128,24 +122,22 @@ export default function AblationChart({ data }: AblationChartProps) {
             )
           })}
 
-          {/* Axes */}
-          <line x1={0} y1={0} x2={0} y2={INNER_H} stroke="#475569" strokeWidth={1} />
-          <line x1={0} y1={INNER_H} x2={INNER_W} y2={INNER_H} stroke="#475569" strokeWidth={1} />
+          <line x1={0} y1={0} x2={0} y2={INNER_H} stroke="var(--border-light)" strokeWidth={1} />
+          <line x1={0} y1={INNER_H} x2={INNER_W} y2={INNER_H} stroke="var(--border-light)" strokeWidth={1} />
 
-          {/* Y-axis title */}
           <text
             x={-INNER_H / 2}
             y={-36}
             textAnchor="middle"
             fontSize={9}
-            fill="#64748b"
+            fill="var(--fg-faint)"
             transform="rotate(-90)"
           >
             Pearson IC
           </text>
         </g>
       </svg>
-      <p className="text-[10px] text-slate-500 mt-1 text-center">
+      <p className="text-micro text-fg-faint mt-1 text-center">
         Stars: * p&lt;0.05, ** p&lt;0.01, *** p&lt;0.001
       </p>
     </div>

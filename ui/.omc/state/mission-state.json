@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-18T23:50:54.441Z",
+  "updatedAt": "2026-04-19T03:20:52.939Z",
   "missions": [
     {
       "id": "session:1002c5ef-0ad4-4408-9a3b-2bc24aad8851:none",
@@ -7,7 +7,7 @@
       "name": "none",
       "objective": "Session mission",
       "createdAt": "2026-04-18T23:47:36.352Z",
-      "updatedAt": "2026-04-18T23:50:54.441Z",
+      "updatedAt": "2026-04-19T03:20:52.939Z",
       "status": "done",
       "workerCount": 3,
       "taskCounts": {
@@ -27,7 +27,7 @@
           "currentStep": null,
           "latestUpdate": "completed",
           "completedSummary": null,
-          "updatedAt": "2026-04-18T23:50:38.495Z"
+          "updatedAt": "2026-04-19T03:20:52.939Z"
         },
         {
           "name": "security-reviewer:ae63af4",
@@ -98,6 +98,14 @@
           "agent": "code-reviewer:aa2e342",
           "detail": "completed",
           "sourceKey": "session-stop:aa2e3421e3104d799"
+        },
+        {
+          "id": "session-stop:aedc6556e8eb89fb9:2026-04-19T03:20:52.939Z",
+          "at": "2026-04-19T03:20:52.939Z",
+          "kind": "completion",
+          "agent": "architect:a6b64f1",
+          "detail": "completed",
+          "sourceKey": "session-stop:aedc6556e8eb89fb9"
         }
       ]
     }
