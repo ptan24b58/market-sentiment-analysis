@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useEventContext } from '@/context/EventContext'
 import EventBanner from '@/components/EventBanner'
-import EventList from '@/components/EventList'
 import ChoroplethMap from '@/components/ChoroplethMap'
 import { IncomePanel } from '@/components/SidePanels/IncomePanel'
 import { PoliticalPanel } from '@/components/SidePanels/PoliticalPanel'
@@ -13,15 +12,22 @@ import AblationTable from '@/components/AblationTable'
 import AblationChart from '@/components/AblationChart'
 import SupplementarySharpe from '@/components/SupplementarySharpe'
 import { SimulateTab } from '@/components/SimulateTab'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+import { Tabs, TabsContent } from '@/components/ui/tabs'
 import { Switch } from '@/components/ui/switch'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Sidebar } from '@/components/shell/Sidebar'
+import { StatusBar } from '@/components/shell/StatusBar'
+import { CommandPalette } from '@/components/shell/CommandPalette'
 import { loadAblationResults } from '@/lib/data-loader'
 import type { AblationResults, PersonaSentiment } from '@/types/data'
 
+type TabId = 'map' | 'ablation' | 'simulate'
+
 export default function HomePage() {
   const { currentEvent, personaSentiments, personas } = useEventContext()
-  const [activeTab, setActiveTab] = useState<'map' | 'ablation' | 'simulate'>('map')
+  const [activeTab, setActiveTab] = useState<TabId>('map')
   const [ablationData, setAblationData] = useState<AblationResults | null>(null)
   const [showPostDynamics, setShowPostDynamics] = useState(false)
 
@@ -33,7 +39,6 @@ export default function HomePage() {
     (s) => s.event_id === currentEvent?.event_id
   )
 
-  // Compute regionStats for the Map tab from currentSentiments + personas
   const regionStats = useMemo(() => {
     const byRegion = new Map<string, number[]>()
     for (const s of currentSentiments) {
@@ -54,73 +59,61 @@ export default function HomePage() {
     return result
   }, [currentSentiments, personas, showPostDynamics])
 
+  const currentIC = useMemo(() => {
+    if (!ablationData) return null
+    return ablationData.primary_table.persona_graph?.ic_pearson ?? null
+  }, [ablationData])
+
   return (
-    <div className="flex flex-col h-screen bg-surface">
-      {/* Masthead + event banner */}
-      <header className="flex-none border-b border-border">
-        <div className="flex items-center justify-between px-4 py-2 bg-surface-panel">
-          <span className="u-label text-fg-dim">
-            LLM Persona Sentiment Simulator
-          </span>
-          <span className="text-xs text-fg-faint">Hook&apos;em Hacks 2026</span>
-        </div>
+    <div className="flex h-screen bg-surface">
+      <Sidebar activeTab={activeTab} onSelect={setActiveTab} />
+
+      <div className="flex-1 flex flex-col min-w-0">
         <EventBanner />
-      </header>
 
-      {/* Main body */}
-      <div className="flex flex-1 min-h-0">
-        <aside
-          className="flex-none w-64 border-r border-border bg-surface-panel"
-          aria-label="Event list"
-        >
-          <EventList />
-        </aside>
-
-        <main className="flex-1 flex flex-col min-w-0">
+        <main className="flex-1 flex flex-col min-h-0">
           <Tabs
             value={activeTab}
-            onValueChange={(v) => setActiveTab(v as 'map' | 'ablation' | 'simulate')}
+            onValueChange={(v) => setActiveTab(v as TabId)}
             className="flex-1 flex flex-col min-h-0"
           >
-            <div className="flex-none flex items-center bg-surface-panel border-b border-border">
-              <TabsList className="flex-none bg-transparent border-none">
-                <TabsTrigger value="map">Sentiment Map</TabsTrigger>
-                <TabsTrigger value="ablation">Ablation Results</TabsTrigger>
-                <TabsTrigger value="simulate">Simulate</TabsTrigger>
-              </TabsList>
-
-              {activeTab === 'map' && (
-                <div className="ml-auto flex items-center pr-4 gap-2 text-xs text-fg-dim">
-                  <span>Dynamics</span>
-                  <Switch
-                    checked={showPostDynamics}
-                    onCheckedChange={setShowPostDynamics}
-                    aria-label="Toggle before/after dynamics"
-                  />
-                  <span>{showPostDynamics ? 'Post-Deffuant' : 'Raw'}</span>
-                </div>
-              )}
-            </div>
-
             <TabsContent value="map" className="m-0 flex-1 min-h-0">
               <div className="flex h-full">
-                <div className="flex-1 relative">
-                  <ChoroplethMap
-                    regionStats={regionStats}
-                    showPostDynamics={showPostDynamics}
-                    captionText={showPostDynamics ? 'Post-Deffuant (ε=0.3)' : 'Raw persona scores'}
-                  />
+                <div className="flex-1 flex flex-col min-w-0">
+                  <div className="flex-none flex items-center justify-between px-4 py-2 border-b border-border bg-surface-panel">
+                    <span className="u-label">Sentiment Map</span>
+                    <div className="flex items-center gap-2 text-xs text-fg-dim">
+                      <span>Dynamics</span>
+                      <Switch
+                        checked={showPostDynamics}
+                        onCheckedChange={setShowPostDynamics}
+                        aria-label="Toggle before/after dynamics"
+                      />
+                      <span className="font-mono text-fg-muted">
+                        {showPostDynamics ? 'Post-Deffuant' : 'Raw'}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex-1 relative">
+                    <ChoroplethMap
+                      regionStats={regionStats}
+                      showPostDynamics={showPostDynamics}
+                      captionText={showPostDynamics ? 'Post-Deffuant (ε=0.3)' : 'Raw persona scores'}
+                    />
+                  </div>
                 </div>
 
                 <aside
-                  className="flex-none w-64 border-l border-border bg-surface-panel flex flex-col"
+                  className="flex-none w-72 border-l border-border bg-surface flex flex-col"
                   aria-label="Demographic breakdowns"
                 >
                   <ScrollArea className="flex-1">
-                    <IncomePanel sentiments={currentSentiments} personas={personas} />
-                    <PoliticalPanel sentiments={currentSentiments} personas={personas} />
-                    <AgePanel sentiments={currentSentiments} personas={personas} />
-                    <GeographyPanel sentiments={currentSentiments} personas={personas} />
+                    <div className="p-2 space-y-2">
+                      <IncomePanel sentiments={currentSentiments} personas={personas} />
+                      <PoliticalPanel sentiments={currentSentiments} personas={personas} />
+                      <AgePanel sentiments={currentSentiments} personas={personas} />
+                      <GeographyPanel sentiments={currentSentiments} personas={personas} />
+                    </div>
                   </ScrollArea>
                 </aside>
               </div>
@@ -130,26 +123,39 @@ export default function HomePage() {
               <ScrollArea className="h-full bg-surface">
                 <div className="p-6">
                   {ablationData ? (
-                    <div className="max-w-5xl mx-auto space-y-8">
-                      <section aria-label="Ablation results table">
-                        <h2 className="text-sm font-semibold text-fg-muted mb-3">
-                          Primary Ablation Table — IC and Panel t-stat
-                        </h2>
-                        <AblationTable data={ablationData} />
-                      </section>
-                      <section aria-label="IC bar chart">
-                        <h2 className="text-sm font-semibold text-fg-muted mb-3">
-                          Pearson IC by Pipeline
-                        </h2>
-                        <AblationChart data={ablationData} />
-                      </section>
-                      <section aria-label="Supplementary Sharpe">
-                        <SupplementarySharpe data={ablationData} />
-                      </section>
+                    <div className="max-w-5xl mx-auto space-y-4">
+                      <Card>
+                        <CardHeader>
+                          <CardTitle>Primary Ablation Table — IC and Panel t-stat</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <AblationTable data={ablationData} />
+                        </CardContent>
+                      </Card>
+
+                      <Card>
+                        <CardHeader>
+                          <CardTitle>Pearson IC by Pipeline</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <AblationChart data={ablationData} />
+                        </CardContent>
+                      </Card>
+
+                      <Card>
+                        <CardHeader>
+                          <CardTitle>Supplementary Sharpe</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <SupplementarySharpe data={ablationData} />
+                        </CardContent>
+                      </Card>
                     </div>
                   ) : (
-                    <div className="flex items-center justify-center h-full">
-                      <p className="text-fg-faint text-sm">Loading ablation data...</p>
+                    <div className="max-w-5xl mx-auto space-y-4">
+                      <Skeleton className="h-40 w-full" />
+                      <Skeleton className="h-48 w-full" />
+                      <Skeleton className="h-32 w-full" />
                     </div>
                   )}
                 </div>
@@ -161,7 +167,11 @@ export default function HomePage() {
             </TabsContent>
           </Tabs>
         </main>
+
+        <StatusBar epsilon={0.3} ic={currentIC} />
       </div>
+
+      <CommandPalette onNavigate={setActiveTab} />
     </div>
   )
 }

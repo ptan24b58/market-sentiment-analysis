@@ -93,9 +93,6 @@ export default function EventList() {
   return (
     <ScrollArea className="h-full">
       <div role="list" aria-label="Event list">
-        <div className="sticky top-0 z-10 px-3 py-2 bg-surface-panel u-label border-b border-border">
-          Events ({events.length})
-        </div>
         {events.map((event) => (
           <div key={event.event_id} role="listitem">
             <EventRow
