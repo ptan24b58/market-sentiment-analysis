@@ -10,6 +10,7 @@
 import type {
   Event,
   Persona,
+  PersonaSentiment,
   AblationResults,
   SentinelDiagnostics,
 } from '@/types/data'
@@ -17,6 +18,7 @@ import type {
 // ── mock fixtures (bundled at build time) ─────────────────────────────────────
 import mockEvents from '@/mocks/events.json'
 import mockPersonas from '@/mocks/personas.json'
+import mockPersonaSentiments from '@/mocks/persona_sentiments.json'
 import mockAblation from '@/mocks/ablation_results.json'
 import mockSentinel from '@/mocks/sentinel_diagnostics.json'
 
@@ -45,6 +47,15 @@ export async function loadPersonas(): Promise<Persona[]> {
   } catch (err) {
     console.info('[data-loader] /data/personas.json unavailable, using mock data.', err)
     return mockPersonas as Persona[]
+  }
+}
+
+export async function loadPersonaSentiments(): Promise<PersonaSentiment[]> {
+  try {
+    return await fetchJson<PersonaSentiment[]>('/data/persona_sentiments.json')
+  } catch (err) {
+    console.info('[data-loader] /data/persona_sentiments.json unavailable, using mock data.', err)
+    return mockPersonaSentiments as PersonaSentiment[]
   }
 }
 

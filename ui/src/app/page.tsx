@@ -14,12 +14,11 @@ import AblationChart from '@/components/AblationChart'
 import SupplementarySharpe from '@/components/SupplementarySharpe'
 import { loadAblationResults } from '@/lib/data-loader'
 import type { AblationResults, PersonaSentiment } from '@/types/data'
-import mockPersonaSentiments from '@/mocks/persona_sentiments.json'
 
 type TabId = 'map' | 'ablation'
 
 export default function HomePage() {
-  const { currentEvent } = useEventContext()
+  const { currentEvent, personaSentiments } = useEventContext()
   const [activeTab, setActiveTab] = useState<TabId>('map')
   const [ablationData, setAblationData] = useState<AblationResults | null>(null)
   const [showPostDynamics, setShowPostDynamics] = useState(false)
@@ -29,9 +28,9 @@ export default function HomePage() {
   }, [])
 
   // Filter persona sentiments for the current event
-  const currentSentiments: PersonaSentiment[] = (
-    mockPersonaSentiments as PersonaSentiment[]
-  ).filter((s) => s.event_id === currentEvent?.event_id)
+  const currentSentiments: PersonaSentiment[] = personaSentiments.filter(
+    (s) => s.event_id === currentEvent?.event_id
+  )
 
   const tabs: { id: TabId; label: string }[] = [
     { id: 'map', label: 'Sentiment Map' },

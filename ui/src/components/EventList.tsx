@@ -1,15 +1,11 @@
 'use client'
 
 import { useEventContext } from '@/context/EventContext'
-import type { Event } from '@/types/data'
-import mockPersonaSentiments from '@/mocks/persona_sentiments.json'
-import type { PersonaSentiment } from '@/types/data'
+import type { Event, PersonaSentiment } from '@/types/data'
 
-/** Compute mean raw sentiment for an event from mock persona sentiments. */
-function meanSentiment(eventId: string): number | null {
-  const rows = (mockPersonaSentiments as PersonaSentiment[]).filter(
-    (s) => s.event_id === eventId
-  )
+/** Compute mean raw sentiment for an event from the loaded persona sentiments. */
+function meanSentiment(eventId: string, allSentiments: PersonaSentiment[]): number | null {
+  const rows = allSentiments.filter((s) => s.event_id === eventId)
   if (rows.length === 0) return null
   return rows.reduce((sum, r) => sum + r.raw_sentiment, 0) / rows.length
 }
@@ -30,12 +26,13 @@ function formatDate(iso: string): string {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
-function EventRow({ event, isActive, onClick }: {
+function EventRow({ event, isActive, onClick, allSentiments }: {
   event: Event
   isActive: boolean
   onClick: () => void
+  allSentiments: PersonaSentiment[]
 }) {
-  const score = meanSentiment(event.event_id)
+  const score = meanSentiment(event.event_id, allSentiments)
   const { char, className: glyphCls } = sentimentGlyph(score)
 
   return (
@@ -86,7 +83,7 @@ function EventRow({ event, isActive, onClick }: {
 }
 
 export default function EventList() {
-  const { events, currentEventId, setCurrentEventId } = useEventContext()
+  const { events, currentEventId, setCurrentEventId, personaSentiments } = useEventContext()
 
   if (events.length === 0) {
     return (
@@ -105,6 +102,7 @@ export default function EventList() {
             event={event}
             isActive={event.event_id === currentEventId}
             onClick={() => setCurrentEventId(event.event_id)}
+            allSentiments={personaSentiments}
           />
         </div>
       ))}
