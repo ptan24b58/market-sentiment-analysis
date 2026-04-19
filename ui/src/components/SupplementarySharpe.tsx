@@ -20,7 +20,7 @@ export default function SupplementarySharpe({ data }: SupplementarySharpeProps) 
 
   return (
     <section
-      className="border border-accent-amber-border/50 rounded bg-amber-950/20 p-4"
+      className="border border-accent-amber-border/50 rounded bg-accent-amber-bg/40 p-4"
       aria-label="Supplementary tercile Sharpe ratios"
     >
       <h2 className="text-sm font-semibold text-accent-amber-text mb-1">
