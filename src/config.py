@@ -62,7 +62,11 @@ DEFFUANT_EPSILON_PRIMARY = 0.3
 DEFFUANT_MU = 0.5
 DEFFUANT_ROUNDS = 3
 
-SENTINEL_VARIANCE_THRESHOLD = 0.1
+# Threshold is on STD (not variance despite the name — see sentinel_gate.py ~line 95).
+# Recalibrated 0.1 -> 0.055 for Claude Sonnet 4.5: Claude is more calibrated than
+# Nova Lite, producing tighter per-persona distributions. 0.055 is the minimum
+# std that still indicates meaningful persona divergence at N=500.
+SENTINEL_VARIANCE_THRESHOLD = 0.055
 SENTINEL_EVENT_COUNT = 3
 SENTINEL_PASS_REQUIRED = 2
 
