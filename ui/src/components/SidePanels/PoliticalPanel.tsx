@@ -1,10 +1,10 @@
 'use client'
 
 import type { PersonaSentiment, Persona } from '@/types/data'
-import mockPersonas from '@/mocks/personas.json'
 
 interface PoliticalPanelProps {
   sentiments: PersonaSentiment[]
+  personas: Persona[]
 }
 
 const POLITICAL_BINS: Persona['political_lean'][] = ['D', 'R', 'I']
@@ -20,9 +20,9 @@ const BIN_COLORS: Record<Persona['political_lean'], { bar: string; text: string 
 }
 
 function aggregateByPolitical(
-  sentiments: PersonaSentiment[]
+  sentiments: PersonaSentiment[],
+  personas: Persona[]
 ): Record<Persona['political_lean'], { mean: number; count: number } | null> {
-  const personas = mockPersonas as Persona[]
   const bins: Record<string, { sum: number; count: number }> = {}
 
   for (const s of sentiments) {
@@ -80,8 +80,8 @@ function BarRow({
   )
 }
 
-export function PoliticalPanel({ sentiments }: PoliticalPanelProps) {
-  const agg = aggregateByPolitical(sentiments)
+export function PoliticalPanel({ sentiments, personas }: PoliticalPanelProps) {
+  const agg = aggregateByPolitical(sentiments, personas)
 
   return (
     <section

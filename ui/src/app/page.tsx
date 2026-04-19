@@ -18,7 +18,7 @@ import type { AblationResults, PersonaSentiment } from '@/types/data'
 type TabId = 'map' | 'ablation'
 
 export default function HomePage() {
-  const { currentEvent, personaSentiments } = useEventContext()
+  const { currentEvent, personaSentiments, personas } = useEventContext()
   const [activeTab, setActiveTab] = useState<TabId>('map')
   const [ablationData, setAblationData] = useState<AblationResults | null>(null)
   const [showPostDynamics, setShowPostDynamics] = useState(false)
@@ -118,6 +118,7 @@ export default function HomePage() {
                 <div className="flex-1 relative">
                   <ChoroplethMap
                     sentiments={currentSentiments}
+                    personas={personas}
                     showPostDynamics={showPostDynamics}
                   />
                 </div>
@@ -127,10 +128,10 @@ export default function HomePage() {
                   className="flex-none w-64 border-l border-slate-700 overflow-y-auto bg-[#1e293b] flex flex-col gap-px"
                   aria-label="Demographic breakdowns"
                 >
-                  <IncomePanel sentiments={currentSentiments} />
-                  <PoliticalPanel sentiments={currentSentiments} />
-                  <AgePanel sentiments={currentSentiments} />
-                  <GeographyPanel sentiments={currentSentiments} />
+                  <IncomePanel sentiments={currentSentiments} personas={personas} />
+                  <PoliticalPanel sentiments={currentSentiments} personas={personas} />
+                  <AgePanel sentiments={currentSentiments} personas={personas} />
+                  <GeographyPanel sentiments={currentSentiments} personas={personas} />
                 </aside>
               </div>
             )}

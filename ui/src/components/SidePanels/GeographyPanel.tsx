@@ -1,10 +1,10 @@
 'use client'
 
 import type { PersonaSentiment, Persona } from '@/types/data'
-import mockPersonas from '@/mocks/personas.json'
 
 interface GeographyPanelProps {
   sentiments: PersonaSentiment[]
+  personas: Persona[]
 }
 
 const TX_REGIONS = [
@@ -21,9 +21,9 @@ const TX_REGIONS = [
 type TxRegion = (typeof TX_REGIONS)[number]
 
 function aggregateByRegion(
-  sentiments: PersonaSentiment[]
+  sentiments: PersonaSentiment[],
+  personas: Persona[]
 ): Map<TxRegion, { mean: number; count: number }> {
-  const personas = mockPersonas as Persona[]
   const bins = new Map<string, { sum: number; count: number }>()
 
   for (const s of sentiments) {
@@ -68,8 +68,8 @@ function BarRow({ label, value, count }: { label: string; value: number; count: 
   )
 }
 
-export function GeographyPanel({ sentiments }: GeographyPanelProps) {
-  const agg = aggregateByRegion(sentiments)
+export function GeographyPanel({ sentiments, personas }: GeographyPanelProps) {
+  const agg = aggregateByRegion(sentiments, personas)
 
   return (
     <section

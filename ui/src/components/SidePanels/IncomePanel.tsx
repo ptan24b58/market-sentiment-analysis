@@ -1,10 +1,10 @@
 'use client'
 
 import type { PersonaSentiment, Persona } from '@/types/data'
-import mockPersonas from '@/mocks/personas.json'
 
 interface IncomePanelProps {
   sentiments: PersonaSentiment[]
+  personas: Persona[]
 }
 
 const INCOME_BINS: Persona['income_bin'][] = ['low', 'mid', 'high']
@@ -15,9 +15,9 @@ const BIN_LABELS: Record<Persona['income_bin'], string> = {
 }
 
 function aggregateByIncome(
-  sentiments: PersonaSentiment[]
+  sentiments: PersonaSentiment[],
+  personas: Persona[]
 ): Record<Persona['income_bin'], { mean: number; count: number } | null> {
-  const personas = mockPersonas as Persona[]
   const bins: Record<string, { sum: number; count: number }> = {}
 
   for (const s of sentiments) {
@@ -68,8 +68,8 @@ function BarRow({
   )
 }
 
-export function IncomePanel({ sentiments }: IncomePanelProps) {
-  const agg = aggregateByIncome(sentiments)
+export function IncomePanel({ sentiments, personas }: IncomePanelProps) {
+  const agg = aggregateByIncome(sentiments, personas)
 
   return (
     <section

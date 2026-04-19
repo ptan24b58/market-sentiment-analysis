@@ -1,14 +1,15 @@
 'use client'
 
 import React, { createContext, useContext, useState, useEffect } from 'react'
-import type { Event, PersonaSentiment } from '@/types/data'
-import { loadEvents, loadPersonaSentiments } from '@/lib/data-loader'
+import type { Event, Persona, PersonaSentiment } from '@/types/data'
+import { loadEvents, loadPersonas, loadPersonaSentiments } from '@/lib/data-loader'
 
 interface EventContextValue {
   events: Event[]
   currentEventId: string | null
   setCurrentEventId: (id: string) => void
   currentEvent: Event | null
+  personas: Persona[]
   personaSentiments: PersonaSentiment[]
   sentimentsLoaded: boolean
 }
@@ -18,6 +19,7 @@ const EventContext = createContext<EventContextValue>({
   currentEventId: null,
   setCurrentEventId: () => undefined,
   currentEvent: null,
+  personas: [],
   personaSentiments: [],
   sentimentsLoaded: false,
 })
@@ -25,6 +27,7 @@ const EventContext = createContext<EventContextValue>({
 export function EventProvider({ children }: { children: React.ReactNode }) {
   const [events, setEvents] = useState<Event[]>([])
   const [currentEventId, setCurrentEventId] = useState<string | null>(null)
+  const [personas, setPersonas] = useState<Persona[]>([])
   const [personaSentiments, setPersonaSentiments] = useState<PersonaSentiment[]>([])
   const [sentimentsLoaded, setSentimentsLoaded] = useState(false)
 
@@ -35,6 +38,7 @@ export function EventProvider({ children }: { children: React.ReactNode }) {
         setCurrentEventId(data[0].event_id)
       }
     })
+    loadPersonas().then(setPersonas)
     loadPersonaSentiments().then((data) => {
       setPersonaSentiments(data)
       setSentimentsLoaded(true)
@@ -50,6 +54,7 @@ export function EventProvider({ children }: { children: React.ReactNode }) {
         currentEventId,
         setCurrentEventId,
         currentEvent,
+        personas,
         personaSentiments,
         sentimentsLoaded,
       }}

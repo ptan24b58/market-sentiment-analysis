@@ -6,9 +6,7 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import DeckGL from '@deck.gl/react'
 import { GeoJsonLayer } from '@deck.gl/layers'
 import { interpolateRdYlGn } from 'd3-scale-chromatic'
-import type { PersonaSentiment } from '@/types/data'
-import mockPersonas from '@/mocks/personas.json'
-import type { Persona } from '@/types/data'
+import type { Persona, PersonaSentiment } from '@/types/data'
 import type { FeatureCollection } from 'geojson'
 import texasRegionsRaw from '@/geo/texas_regions.json'
 const texasRegions = texasRegionsRaw as unknown as FeatureCollection
@@ -17,6 +15,7 @@ const texasRegions = texasRegionsRaw as unknown as FeatureCollection
 
 interface ChoroplethMapProps {
   sentiments: PersonaSentiment[]
+  personas: Persona[]
   showPostDynamics: boolean
 }
 
@@ -44,9 +43,9 @@ function sentimentToRgba(score: number, alpha = 200): [number, number, number, n
 /** Aggregate persona sentiments by TX region. */
 function aggregateByRegion(
   sentiments: PersonaSentiment[],
+  personas: Persona[],
   usePostDynamics: boolean
 ): Map<string, RegionStats> {
-  const personas = mockPersonas as Persona[]
   const regionMap = new Map<string, { sum: number; count: number }>()
 
   for (const s of sentiments) {
@@ -113,10 +112,10 @@ const MAP_STYLE = process.env.NEXT_PUBLIC_MAPBOX_TOKEN
       ],
     }
 
-export default function ChoroplethMap({ sentiments, showPostDynamics }: ChoroplethMapProps) {
+export default function ChoroplethMap({ sentiments, personas, showPostDynamics }: ChoroplethMapProps) {
   const regionStats = useMemo(
-    () => aggregateByRegion(sentiments, showPostDynamics),
-    [sentiments, showPostDynamics]
+    () => aggregateByRegion(sentiments, personas, showPostDynamics),
+    [sentiments, personas, showPostDynamics]
   )
 
   const layers = useMemo(() => {

@@ -1,18 +1,18 @@
 'use client'
 
 import type { PersonaSentiment, Persona } from '@/types/data'
-import mockPersonas from '@/mocks/personas.json'
 
 interface AgePanelProps {
   sentiments: PersonaSentiment[]
+  personas: Persona[]
 }
 
 const AGE_BINS: Persona['age_bin'][] = ['18-29', '30-44', '45-64', '65+']
 
 function aggregateByAge(
-  sentiments: PersonaSentiment[]
+  sentiments: PersonaSentiment[],
+  personas: Persona[]
 ): Record<Persona['age_bin'], { mean: number; count: number } | null> {
-  const personas = mockPersonas as Persona[]
   const bins: Record<string, { sum: number; count: number }> = {}
 
   for (const s of sentiments) {
@@ -60,8 +60,8 @@ function BarRow({ label, value, count }: { label: string; value: number; count: 
   )
 }
 
-export function AgePanel({ sentiments }: AgePanelProps) {
-  const agg = aggregateByAge(sentiments)
+export function AgePanel({ sentiments, personas }: AgePanelProps) {
+  const agg = aggregateByAge(sentiments, personas)
 
   return (
     <section

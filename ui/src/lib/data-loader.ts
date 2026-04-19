@@ -15,13 +15,6 @@ import type {
   SentinelDiagnostics,
 } from '@/types/data'
 
-// ── mock fixtures (bundled at build time) ─────────────────────────────────────
-import mockEvents from '@/mocks/events.json'
-import mockPersonas from '@/mocks/personas.json'
-import mockPersonaSentiments from '@/mocks/persona_sentiments.json'
-import mockAblation from '@/mocks/ablation_results.json'
-import mockSentinel from '@/mocks/sentinel_diagnostics.json'
-
 // ── helpers ───────────────────────────────────────────────────────────────────
 
 async function fetchJson<T>(url: string): Promise<T> {
@@ -30,14 +23,22 @@ async function fetchJson<T>(url: string): Promise<T> {
   return res.json() as Promise<T>
 }
 
+function logMissing(url: string, err: unknown): void {
+  console.error(
+    `[data-loader] ${url} not found. Run \`python -m scripts.sync_ui_data\` ` +
+      `after the pipeline completes to copy fresh data.`,
+    err,
+  )
+}
+
 // ── public loaders ────────────────────────────────────────────────────────────
 
 export async function loadEvents(): Promise<Event[]> {
   try {
     return await fetchJson<Event[]>('/data/events.json')
   } catch (err) {
-    console.info('[data-loader] /data/events.json unavailable, using mock data.', err)
-    return mockEvents as Event[]
+    logMissing('/data/events.json', err)
+    return []
   }
 }
 
@@ -45,8 +46,8 @@ export async function loadPersonas(): Promise<Persona[]> {
   try {
     return await fetchJson<Persona[]>('/data/personas.json')
   } catch (err) {
-    console.info('[data-loader] /data/personas.json unavailable, using mock data.', err)
-    return mockPersonas as Persona[]
+    logMissing('/data/personas.json', err)
+    return []
   }
 }
 
@@ -54,25 +55,25 @@ export async function loadPersonaSentiments(): Promise<PersonaSentiment[]> {
   try {
     return await fetchJson<PersonaSentiment[]>('/data/persona_sentiments.json')
   } catch (err) {
-    console.info('[data-loader] /data/persona_sentiments.json unavailable, using mock data.', err)
-    return mockPersonaSentiments as PersonaSentiment[]
+    logMissing('/data/persona_sentiments.json', err)
+    return []
   }
 }
 
-export async function loadAblationResults(): Promise<AblationResults> {
+export async function loadAblationResults(): Promise<AblationResults | null> {
   try {
     return await fetchJson<AblationResults>('/data/ablation_results.json')
   } catch (err) {
-    console.info('[data-loader] /data/ablation_results.json unavailable, using mock data.', err)
-    return mockAblation as AblationResults
+    logMissing('/data/ablation_results.json', err)
+    return null
   }
 }
 
-export async function loadSentinelDiagnostics(): Promise<SentinelDiagnostics> {
+export async function loadSentinelDiagnostics(): Promise<SentinelDiagnostics | null> {
   try {
     return await fetchJson<SentinelDiagnostics>('/data/sentinel_diagnostics.json')
   } catch (err) {
-    console.info('[data-loader] /data/sentinel_diagnostics.json unavailable, using mock data.', err)
-    return mockSentinel as SentinelDiagnostics
+    logMissing('/data/sentinel_diagnostics.json', err)
+    return null
   }
 }
