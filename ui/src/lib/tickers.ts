@@ -1,0 +1,17 @@
+export const TEXAS_15_TICKERS: readonly string[] = [
+  "TSLA",
+  "XOM",
+  "OXY",
+  "HAL",
+  "SLB",
+  "T",
+  "DELL",
+  "AAL",
+  "HPE",
+  "CVX",
+  "KR",
+  "WMB",
+  "EOG",
+  "VLO",
+  "COP",
+] as const

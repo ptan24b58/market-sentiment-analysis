@@ -12,6 +12,7 @@ import { GeographyPanel } from '@/components/SidePanels/GeographyPanel'
 import AblationTable from '@/components/AblationTable'
 import AblationChart from '@/components/AblationChart'
 import SupplementarySharpe from '@/components/SupplementarySharpe'
+import { SimulateTab } from '@/components/SimulateTab'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Switch } from '@/components/ui/switch'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -20,7 +21,7 @@ import type { AblationResults, PersonaSentiment } from '@/types/data'
 
 export default function HomePage() {
   const { currentEvent, personaSentiments, personas } = useEventContext()
-  const [activeTab, setActiveTab] = useState<'map' | 'ablation'>('map')
+  const [activeTab, setActiveTab] = useState<'map' | 'ablation' | 'simulate'>('map')
   const [ablationData, setAblationData] = useState<AblationResults | null>(null)
   const [showPostDynamics, setShowPostDynamics] = useState(false)
 
@@ -57,13 +58,14 @@ export default function HomePage() {
         <main className="flex-1 flex flex-col min-w-0">
           <Tabs
             value={activeTab}
-            onValueChange={(v) => setActiveTab(v as 'map' | 'ablation')}
+            onValueChange={(v) => setActiveTab(v as 'map' | 'ablation' | 'simulate')}
             className="flex-1 flex flex-col min-h-0"
           >
             <div className="flex-none flex items-center bg-surface-panel border-b border-border">
               <TabsList className="flex-none bg-transparent border-none">
                 <TabsTrigger value="map">Sentiment Map</TabsTrigger>
                 <TabsTrigger value="ablation">Ablation Results</TabsTrigger>
+                <TabsTrigger value="simulate">Simulate</TabsTrigger>
               </TabsList>
 
               {activeTab === 'map' && (
@@ -131,6 +133,10 @@ export default function HomePage() {
                   )}
                 </div>
               </ScrollArea>
+            </TabsContent>
+
+            <TabsContent value="simulate" className="m-0 flex-1 min-h-0">
+              <SimulateTab />
             </TabsContent>
           </Tabs>
         </main>

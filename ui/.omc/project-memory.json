@@ -1,0 +1,303 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1776570750240,
+  "projectRoot": "/home/tan/Documents/market_sentiment_analysis/ui",
+  "techStack": {
+    "languages": [
+      {
+        "name": "JavaScript/TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "package.json"
+        ]
+      },
+      {
+        "name": "TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "tsconfig.json"
+        ]
+      }
+    ],
+    "frameworks": [
+      {
+        "name": "next",
+        "version": "14.2.5",
+        "category": "fullstack"
+      },
+      {
+        "name": "react",
+        "version": "18.3.1",
+        "category": "frontend"
+      },
+      {
+        "name": "react-dom",
+        "version": "18.3.1",
+        "category": "frontend"
+      }
+    ],
+    "packageManager": "npm",
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": "npm run build",
+    "testCommand": null,
+    "lintCommand": "npm run lint",
+    "devCommand": "npm run dev",
+    "scripts": {
+      "dev": "next dev",
+      "build": "next build",
+      "start": "next start",
+      "lint": "next lint"
+    }
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": "type-based"
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "public",
+      "scripts",
+      "src"
+    ],
+    "gitBranches": null
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "out": {
+      "path": "out",
+      "purpose": "Build output",
+      "fileCount": 3,
+      "lastAccessed": 1776570750235,
+      "keyFiles": [
+        "404.html",
+        "index.html",
+        "index.txt"
+      ]
+    },
+    "public": {
+      "path": "public",
+      "purpose": "Public files",
+      "fileCount": 0,
+      "lastAccessed": 1776570750235,
+      "keyFiles": []
+    },
+    "scripts": {
+      "path": "scripts",
+      "purpose": "Build/utility scripts",
+      "fileCount": 2,
+      "lastAccessed": 1776570750237,
+      "keyFiles": [
+        "prefetch-tiles.sh",
+        "sync-data.sh"
+      ]
+    },
+    "src": {
+      "path": "src",
+      "purpose": "Source code",
+      "fileCount": 0,
+      "lastAccessed": 1776570750238,
+      "keyFiles": []
+    },
+    "out/data": {
+      "path": "out/data",
+      "purpose": "Data files",
+      "fileCount": 8,
+      "lastAccessed": 1776570750238,
+      "keyFiles": [
+        "ablation_results.json",
+        "events.json",
+        "graph_diagnostics.json"
+      ]
+    },
+    "public/data": {
+      "path": "public/data",
+      "purpose": "Data files",
+      "fileCount": 8,
+      "lastAccessed": 1776570750239,
+      "keyFiles": [
+        "ablation_results.json",
+        "events.json",
+        "graph_diagnostics.json"
+      ]
+    },
+    "src/app": {
+      "path": "src/app",
+      "purpose": "Application code",
+      "fileCount": 3,
+      "lastAccessed": 1776570750239,
+      "keyFiles": [
+        "globals.css",
+        "layout.tsx",
+        "page.tsx"
+      ]
+    },
+    "src/components": {
+      "path": "src/components",
+      "purpose": "UI components",
+      "fileCount": 6,
+      "lastAccessed": 1776570750239,
+      "keyFiles": [
+        "AblationChart.tsx",
+        "AblationTable.tsx",
+        "ChoroplethMap.tsx"
+      ]
+    },
+    "src/lib": {
+      "path": "src/lib",
+      "purpose": "Library code",
+      "fileCount": 2,
+      "lastAccessed": 1776570750239,
+      "keyFiles": [
+        "data-loader.ts",
+        "utils.ts"
+      ]
+    },
+    "src/types": {
+      "path": "src/types",
+      "purpose": "Type definitions",
+      "fileCount": 2,
+      "lastAccessed": 1776570750239,
+      "keyFiles": [
+        "data.ts",
+        "geojson.d.ts"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "src/app/page.tsx",
+      "accessCount": 6,
+      "lastAccessed": 1776572304510,
+      "type": "file"
+    },
+    {
+      "path": "src/components/SimulateForm.tsx",
+      "accessCount": 4,
+      "lastAccessed": 1776572478538,
+      "type": "file"
+    },
+    {
+      "path": "src/components/SimulateTab.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1776572439624,
+      "type": "file"
+    },
+    {
+      "path": "src/lib/data-loader.ts",
+      "accessCount": 1,
+      "lastAccessed": 1776571081842,
+      "type": "file"
+    },
+    {
+      "path": "src/app/layout.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1776571095132,
+      "type": "file"
+    },
+    {
+      "path": "src/context/EventContext.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1776571097175,
+      "type": "file"
+    },
+    {
+      "path": "src/components/ChoroplethMap.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1776572142186,
+      "type": "file"
+    },
+    {
+      "path": "src/components/SidePanels/IncomePanel.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1776572146287,
+      "type": "file"
+    },
+    {
+      "path": "src/components/SidePanels/PoliticalPanel.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1776572146646,
+      "type": "file"
+    },
+    {
+      "path": "src/components/SidePanels/AgePanel.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1776572147570,
+      "type": "file"
+    },
+    {
+      "path": "src/components/SidePanels/GeographyPanel.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1776572147788,
+      "type": "file"
+    },
+    {
+      "path": "src/lib/utils.ts",
+      "accessCount": 1,
+      "lastAccessed": 1776572152541,
+      "type": "file"
+    },
+    {
+      "path": "tailwind.config.ts",
+      "accessCount": 1,
+      "lastAccessed": 1776572153013,
+      "type": "file"
+    },
+    {
+      "path": "src/app/globals.css",
+      "accessCount": 1,
+      "lastAccessed": 1776572153451,
+      "type": "file"
+    },
+    {
+      "path": "src/types",
+      "accessCount": 1,
+      "lastAccessed": 1776572161203,
+      "type": "directory"
+    },
+    {
+      "path": "src/types/data.ts",
+      "accessCount": 1,
+      "lastAccessed": 1776572163746,
+      "type": "file"
+    },
+    {
+      "path": "src/lib/tickers.ts",
+      "accessCount": 1,
+      "lastAccessed": 1776572170912,
+      "type": "file"
+    },
+    {
+      "path": "src/lib/simulate-api.ts",
+      "accessCount": 1,
+      "lastAccessed": 1776572184727,
+      "type": "file"
+    },
+    {
+      "path": "src/components/ui/select.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1776572206326,
+      "type": "file"
+    },
+    {
+      "path": "src/components/PhaseIndicator.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1776572232469,
+      "type": "file"
+    },
+    {
+      "path": "src/lib/sample_headlines.ts",
+      "accessCount": 1,
+      "lastAccessed": 1776572469762,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}
