@@ -1,0 +1,220 @@
+{
+  "primary_table": {
+    "lm_dictionary": {
+      "ic_pearson": -0.12551136616854455,
+      "ic_pearson_pvalue": 0.4527519606118843,
+      "ic_spearman": -0.1882941155103428,
+      "ic_spearman_pvalue": 0.25758756618856277,
+      "panel_beta": -0.0028278902850668495,
+      "panel_se_clustered": 0.013505398770471487,
+      "panel_tstat": -0.20938961767273495,
+      "panel_pvalue": 0.8341440970298184,
+      "panel_n_obs": 38,
+      "panel_n_clusters": 9,
+      "panel_used_correction": true
+    },
+    "finbert": {
+      "ic_pearson": 0.1074222969741181,
+      "ic_pearson_pvalue": 0.5209144310777223,
+      "ic_spearman": 0.027517454579083868,
+      "ic_spearman_pvalue": 0.8697363322949391,
+      "panel_beta": 0.00296972401933566,
+      "panel_se_clustered": 0.0037959897663313626,
+      "panel_tstat": 0.7823319350530684,
+      "panel_pvalue": 0.4340195235446269,
+      "panel_n_obs": 38,
+      "panel_n_clusters": 9,
+      "panel_used_correction": true
+    },
+    "nova_zero_shot": {
+      "ic_pearson": 0.1672210433740818,
+      "ic_pearson_pvalue": 0.3156325023079159,
+      "ic_spearman": 0.18380475900895504,
+      "ic_spearman_pvalue": 0.2693142626789918,
+      "panel_beta": 0.007390596230087128,
+      "panel_se_clustered": 0.005010529461618781,
+      "panel_tstat": 1.475013027405572,
+      "panel_pvalue": 0.14020904104573279,
+      "panel_n_obs": 38,
+      "panel_n_clusters": 9,
+      "panel_used_correction": true
+    },
+    "persona_only": {
+      "ic_pearson": 0.12710580315697123,
+      "ic_pearson_pvalue": 0.4469850233290877,
+      "ic_spearman": 0.13813542936113815,
+      "ic_spearman_pvalue": 0.4082062109663082,
+      "panel_beta": 0.008594445951307296,
+      "panel_se_clustered": 0.0070213074145279155,
+      "panel_tstat": 1.2240520808880082,
+      "panel_pvalue": 0.22093258127433457,
+      "panel_n_obs": 38,
+      "panel_n_clusters": 9,
+      "panel_used_correction": true,
+      "mean_variance": 0.030959460526315794,
+      "mean_bimodality": 0.5358293783243632
+    },
+    "persona_graph": {
+      "ic_pearson": 0.12710580315697126,
+      "ic_pearson_pvalue": 0.4469850233290877,
+      "ic_spearman": 0.13813542936113815,
+      "ic_spearman_pvalue": 0.4082062109663082,
+      "panel_beta": 0.008594445951307282,
+      "panel_se_clustered": 0.007021307414527906,
+      "panel_tstat": 1.224052080888008,
+      "panel_pvalue": 0.22093258127433468,
+      "panel_n_obs": 38,
+      "panel_n_clusters": 9,
+      "panel_used_correction": true,
+      "mean_variance": 0.013645210903183819,
+      "mean_bimodality": 0.7866993956997838
+    },
+    "persona_graph_variance_signal": {
+      "ic_pearson": 0.07154503544360698,
+      "ic_pearson_pvalue": 0.6694898938919254,
+      "ic_spearman": 0.08704724675614578,
+      "ic_spearman_pvalue": 0.6033016656086588,
+      "note": "IC computed on |sentiment_variance| vs |AR|"
+    }
+  },
+  "supplementary_sharpe": {
+    "caveat": "n approx 13 per tercile leg; Sharpe SE approx 0.28. Included for completeness, not statistical inference.",
+    "lm_dictionary": {
+      "sharpe": -0.5477256142508846,
+      "sharpe_bootstrap_ci_95": [
+        -1.2043786241515773,
+        -0.019068806260236864
+      ],
+      "n_top": 12,
+      "n_bottom": 12,
+      "bootstrap_resamples": 1000
+    },
+    "finbert": {
+      "sharpe": 0.21806368884775643,
+      "sharpe_bootstrap_ci_95": [
+        -0.4648977537512413,
+        0.8978251269418986
+      ],
+      "n_top": 12,
+      "n_bottom": 12,
+      "bootstrap_resamples": 1000
+    },
+    "nova_zero_shot": {
+      "sharpe": 0.3876776525877757,
+      "sharpe_bootstrap_ci_95": [
+        -0.04659923633687642,
+        1.359679687993599
+      ],
+      "n_top": 12,
+      "n_bottom": 12,
+      "bootstrap_resamples": 1000
+    },
+    "persona_only": {
+      "sharpe": 0.11833001843092031,
+      "sharpe_bootstrap_ci_95": [
+        -0.49726149070520903,
+        0.8749674675551485
+      ],
+      "n_top": 12,
+      "n_bottom": 12,
+      "bootstrap_resamples": 1000
+    },
+    "persona_graph": {
+      "sharpe": 0.11833001843092031,
+      "sharpe_bootstrap_ci_95": [
+        -0.49726149070520903,
+        0.8749674675551485
+      ],
+      "n_top": 12,
+      "n_bottom": 12,
+      "bootstrap_resamples": 1000
+    }
+  },
+  "event_count": 38,
+  "event_ids": [
+    "1204d4af-b707-47d7-a71c-a28deccfb601",
+    "23818cd6-33b9-4226-b230-ff3ec0f8ab3f",
+    "2d094653-2e45-4978-8542-ed552cc73e2b",
+    "2ebace62-a47d-4720-9792-43a5b3bfffe6",
+    "35771e76-cce2-49c3-853b-1c138330fd4c",
+    "391a7f03-48f0-4d49-9276-ed0074cba800",
+    "3b3f16e8-14b3-40b7-af20-b3a86ebb7c2a",
+    "3bf14ca5-a3fa-44bc-945e-83139485de7d",
+    "47031b3d-cd1a-4ebd-837a-3d4c914f86d7",
+    "47b5d249-ba63-4563-941a-aba5910c6406",
+    "4c1b7d49-7894-48c1-acb8-348e457c4b14",
+    "4d7f9443-a03a-4b50-96a3-ed3d2f3a1af8",
+    "4edc9bd9-af41-4b9c-84a3-73456008496d",
+    "4f6fa016-b70e-430b-bc85-04808668387d",
+    "542c2df0-dfcd-41fd-bb9e-0668a4262060",
+    "57a62605-e3aa-4fa0-bc08-a8d775661f50",
+    "5cf3ecab-95cc-4ec4-be1e-106cfcf00905",
+    "80417df9-8d08-4bdf-ac30-c93fcd3f92d2",
+    "821a4ced-7852-4a95-b204-6fd377935277",
+    "87b32851-2d6a-480e-83eb-90add098777b",
+    "8e210d0c-ed63-4ef6-b669-c4489a2066f2",
+    "8f3b135c-0b0a-4e23-a52d-aaa1526929fb",
+    "914cb645-0aa8-4278-8b29-55b58d329979",
+    "91f1f439-5e2a-4b89-ae57-11c66c749592",
+    "925bf73f-7aba-41aa-b88c-65ee2b181b22",
+    "93118361-274b-4bd2-874e-0543a3689a57",
+    "a154275c-a75c-4807-84a7-1b1c66a396e1",
+    "a53109f4-dcf4-4a33-ae6e-8f39dc62d0a0",
+    "b208a770-5451-4abe-8c30-10afee77ec36",
+    "d2ecacee-d557-4ec4-8bf0-c2de1c3d98e5",
+    "d43948ba-5260-463e-aecd-bce37d8e1fd1",
+    "e18ae6e4-81c3-47dd-83dd-661b05aa9bd1",
+    "ee16ec3b-3e13-497e-b92d-766f8f34fd58",
+    "eff32e26-8d90-45d2-9ca1-0a3df9de9aff",
+    "f4aece45-472e-4212-b1c1-6804bdbc79d3",
+    "f5001c23-53d0-4e56-b263-7957346a11f0",
+    "fc76d09f-a4ab-44d3-b797-0383d8d04f63",
+    "fcc11685-439b-4063-a389-bf67825dfd0e"
+  ],
+  "sentinel_diagnostics": {
+    "per_event": [
+      {
+        "event_id": "ee16ec3b-3e13-497e-b92d-766f8f34fd58",
+        "n_personas": 300,
+        "n_valid": 300,
+        "variance": 0.0007048888888888885,
+        "std": 0.026549743668986495,
+        "mean": 0.9946666666666666,
+        "bimodality_index": 0.8937930677468126,
+        "passes_threshold": false
+      },
+      {
+        "event_id": "3bf14ca5-a3fa-44bc-945e-83139485de7d",
+        "n_personas": 300,
+        "n_valid": 300,
+        "variance": 0.02323055555555556,
+        "std": 0.1524157326379254,
+        "mean": 0.7916666666666666,
+        "bimodality_index": 0.4828836802419359,
+        "passes_threshold": true
+      },
+      {
+        "event_id": "80417df9-8d08-4bdf-ac30-c93fcd3f92d2",
+        "n_personas": 300,
+        "n_valid": 300,
+        "variance": 0.033051555555555556,
+        "std": 0.18180086786249278,
+        "mean": 0.08533333333333334,
+        "bimodality_index": 0.5062749284479992,
+        "passes_threshold": true
+      }
+    ],
+    "parse_failure_rate": 0.0,
+    "parse_retry_rate": 0.0,
+    "pass_count": 2,
+    "pass_required": 2,
+    "gate_pass": true,
+    "template_switch_recommended": false,
+    "thresholds": {
+      "variance_min": 0.1,
+      "events_required": 3,
+      "passes_required": 2,
+      "parse_failure_template_switch": 0.1
+    }
+  }
+}
