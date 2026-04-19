@@ -180,8 +180,14 @@
     },
     {
       "path": "src/app/page.tsx",
-      "accessCount": 6,
-      "lastAccessed": 1776572304510,
+      "accessCount": 7,
+      "lastAccessed": 1776586379089,
+      "type": "file"
+    },
+    {
+      "path": "src/components/SimulateTab.tsx",
+      "accessCount": 5,
+      "lastAccessed": 1776586956411,
       "type": "file"
     },
     {
@@ -191,21 +197,27 @@
       "type": "file"
     },
     {
-      "path": "src/components/SimulateTab.tsx",
+      "path": "src/types/data.ts",
+      "accessCount": 3,
+      "lastAccessed": 1776586371521,
+      "type": "file"
+    },
+    {
+      "path": "src/app/layout.tsx",
       "accessCount": 2,
-      "lastAccessed": 1776572439624,
+      "lastAccessed": 1776586941139,
+      "type": "file"
+    },
+    {
+      "path": "src/components/EventList.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1776586962484,
       "type": "file"
     },
     {
       "path": "src/lib/data-loader.ts",
       "accessCount": 1,
       "lastAccessed": 1776571081842,
-      "type": "file"
-    },
-    {
-      "path": "src/app/layout.tsx",
-      "accessCount": 1,
-      "lastAccessed": 1776571095132,
       "type": "file"
     },
     {
@@ -261,12 +273,6 @@
       "accessCount": 1,
       "lastAccessed": 1776572161203,
       "type": "directory"
-    },
-    {
-      "path": "src/types/data.ts",
-      "accessCount": 1,
-      "lastAccessed": 1776572163746,
-      "type": "file"
     },
     {
       "path": "src/lib/tickers.ts",

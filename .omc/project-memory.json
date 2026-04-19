@@ -203,21 +203,45 @@
       "type": "directory"
     },
     {
+      "path": "ui/src/app/globals.css",
+      "accessCount": 4,
+      "lastAccessed": 1776587060719,
+      "type": "file"
+    },
+    {
       "path": "src/config.py",
       "accessCount": 3,
       "lastAccessed": 1776585401303,
       "type": "directory"
     },
     {
-      "path": "ui/src/app/page.tsx",
-      "accessCount": 2,
-      "lastAccessed": 1776584339724,
+      "path": "ui/src/app/layout.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1776585936342,
       "type": "file"
     },
     {
-      "path": "ui/src/app/globals.css",
-      "accessCount": 2,
-      "lastAccessed": 1776584343397,
+      "path": "ui/src/app/page.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1776586358200,
+      "type": "file"
+    },
+    {
+      "path": "ui/src/components/EventBanner.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1776586496314,
+      "type": "file"
+    },
+    {
+      "path": "ui/src/components/SidePanels/IncomePanel.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1776586618354,
+      "type": "file"
+    },
+    {
+      "path": "ui/tailwind.config.ts",
+      "accessCount": 3,
+      "lastAccessed": 1776587065101,
       "type": "file"
     },
     {
@@ -227,27 +251,81 @@
       "type": "file"
     },
     {
-      "path": "ui/src/components/EventBanner.tsx",
+      "path": "ui/components.json",
       "accessCount": 2,
-      "lastAccessed": 1776584346758,
+      "lastAccessed": 1776585709803,
       "type": "file"
     },
     {
-      "path": "ui/tailwind.config.ts",
+      "path": "ui/src/context/EventContext.tsx",
       "accessCount": 2,
-      "lastAccessed": 1776584349709,
+      "lastAccessed": 1776586286048,
       "type": "file"
+    },
+    {
+      "path": "ui/src/components/EventList.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1776586330705,
+      "type": "file"
+    },
+    {
+      "path": "ui/src/components/SidePanels/PoliticalPanel.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1776586632020,
+      "type": "file"
+    },
+    {
+      "path": "ui/src/components/SidePanels/AgePanel.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1776586644998,
+      "type": "file"
+    },
+    {
+      "path": "ui/src/components/SidePanels/GeographyPanel.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1776586656119,
+      "type": "file"
+    },
+    {
+      "path": "ui/src/components/AblationChart.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1776586744767,
+      "type": "file"
+    },
+    {
+      "path": "ui/src/components/AblationTable.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1776586783282,
+      "type": "file"
+    },
+    {
+      "path": "ui/src/components/SupplementarySharpe.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1776586785082,
+      "type": "file"
+    },
+    {
+      "path": "ui/src/components/SimulateForm.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1776586845379,
+      "type": "file"
+    },
+    {
+      "path": "ui/src/components/ui/badge.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1776587071107,
+      "type": "file"
+    },
+    {
+      "path": "ui/src/components",
+      "accessCount": 2,
+      "lastAccessed": 1776587076113,
+      "type": "directory"
     },
     {
       "path": "ui/package.json",
       "accessCount": 1,
       "lastAccessed": 1776584277148,
-      "type": "file"
-    },
-    {
-      "path": "ui/components.json",
-      "accessCount": 1,
-      "lastAccessed": 1776584281383,
       "type": "file"
     },
     {
@@ -257,45 +335,15 @@
       "type": "file"
     },
     {
-      "path": "ui/src/app/layout.tsx",
-      "accessCount": 1,
-      "lastAccessed": 1776584284700,
-      "type": "file"
-    },
-    {
-      "path": "ui/src/components/SimulateForm.tsx",
-      "accessCount": 1,
-      "lastAccessed": 1776584287341,
-      "type": "file"
-    },
-    {
       "path": "ui/src/components/ChoroplethMap.tsx",
       "accessCount": 1,
       "lastAccessed": 1776584290133,
       "type": "file"
     },
     {
-      "path": "ui/src/components/AblationChart.tsx",
-      "accessCount": 1,
-      "lastAccessed": 1776584290568,
-      "type": "file"
-    },
-    {
-      "path": "ui/src/components/SidePanels/IncomePanel.tsx",
-      "accessCount": 1,
-      "lastAccessed": 1776584290969,
-      "type": "file"
-    },
-    {
       "path": "ui/src/types/data.ts",
       "accessCount": 1,
       "lastAccessed": 1776584293537,
-      "type": "file"
-    },
-    {
-      "path": "ui/src/context/EventContext.tsx",
-      "accessCount": 1,
-      "lastAccessed": 1776584293848,
       "type": "file"
     },
     {
@@ -309,6 +357,36 @@
       "accessCount": 1,
       "lastAccessed": 1776585106516,
       "type": "directory"
+    },
+    {
+      "path": "ui/src/components/shell/Sidebar.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1776586306899,
+      "type": "file"
+    },
+    {
+      "path": "ui/src/components/shell/StatusBar.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1776586314334,
+      "type": "file"
+    },
+    {
+      "path": "ui/src/components/shell/CommandPalette.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1776586323927,
+      "type": "file"
+    },
+    {
+      "path": "ui/src/components/SimulateTab.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1776586845053,
+      "type": "file"
+    },
+    {
+      "path": "ui/src/components/PhaseIndicator.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1776586855642,
+      "type": "file"
     }
   ],
   "userDirectives": []

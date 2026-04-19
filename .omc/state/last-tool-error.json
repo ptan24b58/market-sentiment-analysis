@@ -1,7 +1,7 @@
 {
   "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"cd /home/tan/Documents/market_sentiment_analysis/ui && npm run build 2>&1\",\"timeout\":120000,\"description\":\"Run Next.js build after all fixes\"}",
-  "error": "Exit code 1\n\n> market-sentiment-ui@0.1.0 build\n> next build\n\n  ▲ Next.js 14.2.5\n\n   Creating an optimized production build ...\n ✓ Compiled successfully\n   Skipping linting\n   Checking validity of types ...\nFailed to compile.\n\n./src/components/ChoroplethMap.tsx:209:40\nType error: Type 'number' is not assignable to type 'string'.\n\n\u001b[0m \u001b[90m 207 |\u001b[39m           }\u001b[0m\n\u001b[0m \u001b[90m 208 |\u001b[39m         }}\u001b[0m\n\u001b[0m\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 209 |\u001b[39m         style\u001b[33m=\u001b[39m{{ position\u001b[33m:\u001b[39m \u001b[32m'...",
-  "timestamp": "2026-04-19T04:52:37.017Z",
-  "retry_count": 3
+  "tool_input_preview": "{\"command\":\"cd /home/tan/Documents/market_sentiment_analysis/ui && (npm run dev > /tmp/dev-smoke.log 2>&1 &) && sleep 8 && curl -sS -o /tmp/dev-curl.html -w \\\"HTTP %{http_code} · %{size_download}B · %...",
+  "error": "Exit code 144\nHTTP 200 · 21177B · 3.839085s\n---\n\n> market-sentiment-ui@0.1.0 dev\n> next dev\n\n  ▲ Next.js 14.2.5\n  - Local:        http://localhost:3000\n\n ✓ Starting...\n ✓ Ready in 927ms\n ○ Compiling / ...\n ✓ Compiled / in 3.9s (2870 modules)\n GET / 200 in 4154ms",
+  "timestamp": "2026-04-19T08:30:18.148Z",
+  "retry_count": 1
 }
