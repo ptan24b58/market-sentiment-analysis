@@ -23,10 +23,19 @@ from src.llm.prompts import (
 )
 from src.personas.demographics import (
     AGE_RANGES,
+    EDUCATION_PHRASES,
     INCOME_RANGES,
+    INVESTMENT_EXPOSURE_PHRASES,
+    NEWS_CONSUMPTION_PHRASES,
+    OCCUPATION_PHRASES,
     load_acs_strata,
     region_centroid,
     sample_contextual_anchor,
+    sample_education,
+    sample_industry_exposure,
+    sample_investment_exposure,
+    sample_news_consumption,
+    sample_occupation,
 )
 
 _PARTY_LABEL = {"R": "Republican", "D": "Democratic", "I": "Independent"}
@@ -103,12 +112,22 @@ def generate_personas(
         anchor = sample_contextual_anchor(
             political_lean, income_bin, zip_region, rng
         )
+        occupation = sample_occupation(age_bin, zip_region, rng)
+        industry_exposure = sample_industry_exposure(occupation, income_bin, rng)
+        education = sample_education(income_bin, rng)
+        news_consumption = sample_news_consumption(political_lean, rng)
+        investment_exposure = sample_investment_exposure(income_bin, rng)
+
         suffix = DEMOGRAPHIC_SUFFIX_TEMPLATE.format(
             age=age,
             income_bracket=income_bin,
             zip_region=zip_region,
             annual_income=annual_income,
+            occupation_phrase=OCCUPATION_PHRASES[occupation],
+            investment_exposure_phrase=INVESTMENT_EXPOSURE_PHRASES[investment_exposure],
+            education_phrase=EDUCATION_PHRASES[education],
             party_reg=_PARTY_LABEL[political_lean],
+            news_consumption_phrase=NEWS_CONSUMPTION_PHRASES[news_consumption],
             contextual_anchor=anchor,
         )
         system_prompt = build_persona_system_prompt(suffix)
@@ -122,7 +141,11 @@ def generate_personas(
                 income_bracket=income_bin,
                 zip_region=zip_region,
                 annual_income=annual_income,
+                occupation_phrase=OCCUPATION_PHRASES[occupation],
+                investment_exposure_phrase=INVESTMENT_EXPOSURE_PHRASES[investment_exposure],
+                education_phrase=EDUCATION_PHRASES[education],
                 party_reg=_PARTY_LABEL[political_lean],
+                news_consumption_phrase=NEWS_CONSUMPTION_PHRASES[news_consumption],
                 contextual_anchor=anchor,
             )
             system_prompt = build_persona_system_prompt(suffix)
@@ -139,6 +162,11 @@ def generate_personas(
                 "lat": lat,
                 "lon": lon,
                 "contextual_anchor": anchor,
+                "occupation": occupation,
+                "industry_exposure": industry_exposure,
+                "education": education,
+                "news_consumption": news_consumption,
+                "investment_exposure": investment_exposure,
                 "system_prompt": system_prompt,
             }
         )

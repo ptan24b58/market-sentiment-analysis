@@ -20,7 +20,10 @@ Respond with ONLY a single decimal number between -1.0 and 1.0, where -1.0 is ex
 DEMOGRAPHIC_SUFFIX_TEMPLATE = (
     "\n\nYou are a {age}-year-old {income_bracket}-income resident of "
     "{zip_region}, Texas, earning approximately ${annual_income:,} per year. "
-    "You are registered as a {party_reg} voter. {contextual_anchor}"
+    "You work in {occupation_phrase} and have {investment_exposure_phrase}. "
+    "You completed {education_phrase}. "
+    "You are registered as a {party_reg} voter and consume primarily "
+    "{news_consumption_phrase}. {contextual_anchor}"
 )
 
 

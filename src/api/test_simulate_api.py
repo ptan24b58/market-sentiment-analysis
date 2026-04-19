@@ -46,7 +46,7 @@ def test_preview_happy_path(client):
     assert data["phase"] == "preview"
     assert 0 < data["sample_size"] <= 60
     regions = {row["zip_region"] for row in data["persona_sentiments"]}
-    # 8 regions exist in data/personas.json; stratified sample covers all.
+    # 14 regions exist in data/personas.json; stratified sample covers all.
     assert len(regions) >= 6
     assert "region_stats" in data
     assert "parse_failure_rate" in data
@@ -58,12 +58,12 @@ def test_preview_happy_path(client):
 
 
 def test_full_happy_path(client):
-    """Full returns 200, phase=full, sample_size=300, dynamics columns present."""
+    """Full returns 200, phase=full, sample_size=500, dynamics columns present."""
     resp = client.post("/simulate/full", json=_VALID_BODY)
     assert resp.status_code == 200, resp.text
     data = resp.json()
     assert data["phase"] == "full"
-    assert data["sample_size"] == 300
+    assert data["sample_size"] == 500
     first_row = data["persona_sentiments"][0]
     assert "post_dynamics_0.2" in first_row
     dyn = data["region_stats_dyn"]

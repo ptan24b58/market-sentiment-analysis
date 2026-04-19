@@ -64,7 +64,11 @@ app.add_middleware(
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
-_DEMO_FIELDS = ("zip_region", "political_lean", "income_bin", "age_bin", "lat", "lon")
+_DEMO_FIELDS = (
+    "zip_region", "political_lean", "income_bin", "age_bin", "lat", "lon",
+    "occupation", "industry_exposure", "education", "news_consumption",
+    "investment_exposure",
+)
 
 
 def _build_event(headline_text: str, ticker: str) -> dict[str, Any]:

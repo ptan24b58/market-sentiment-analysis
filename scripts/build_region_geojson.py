@@ -159,11 +159,13 @@ def main() -> None:
     print(f"Matched: {len(matched)} counties across {len(region_geoms)} regions")
     print(f"Unmatched (dropped): {len(unmatched)}")
 
-    # Verify all 8 expected regions are present
+    # Verify all 14 expected regions are present
     expected_regions = {
         "Austin Metro", "Houston Metro", "Dallas-Fort Worth",
         "San Antonio Metro", "Permian Basin", "Rio Grande Valley",
         "East Texas", "Panhandle",
+        "Central Texas", "Hill Country", "Coastal Bend",
+        "Brazos Valley", "Big Bend", "North Central",
     }
     missing = expected_regions - set(region_geoms.keys())
     if missing:

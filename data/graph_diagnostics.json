@@ -1,34 +1,34 @@
 {
-  "n_nodes": 300,
-  "n_edges": 2938,
-  "mean_degree": 19.586666666666666,
-  "median_degree": 19.0,
-  "min_degree": 7,
-  "max_degree": 34,
+  "n_nodes": 500,
+  "n_edges": 5082,
+  "mean_degree": 20.328,
+  "median_degree": 20.0,
+  "min_degree": 4,
+  "max_degree": 39,
   "n_components": 1,
-  "largest_component_size": 300,
+  "largest_component_size": 500,
   "largest_component_share": 1.0,
   "homophily": {
     "political": {
-      "same_share": 0.6511232130701157,
+      "same_share": 0.6639118457300276,
       "baseline": 0.4914,
-      "coleman_index": 0.3140448546404162,
+      "coleman_index": 0.3391896298270303,
       "target": 0.35,
       "tolerance": 0.05,
       "within_tolerance": true
     },
     "income": {
-      "same_share": 0.5282505105513955,
+      "same_share": 0.49980322707595437,
       "baseline": 0.3498,
-      "coleman_index": 0.274454799371571,
+      "coleman_index": 0.2307032098984226,
       "target": 0.25,
       "tolerance": 0.05,
       "within_tolerance": true
     },
     "geographic": {
-      "same_share": 0.5677331518039482,
-      "baseline": 0.18300000000000002,
-      "coleman_index": 0.4709096105311484,
+      "same_share": 0.5401416765053129,
+      "baseline": 0.1322,
+      "coleman_index": 0.4700872050072746,
       "target": 0.5,
       "tolerance": 0.05,
       "within_tolerance": true

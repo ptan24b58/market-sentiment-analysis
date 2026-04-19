@@ -16,7 +16,7 @@ export interface Event {
 
 // ─── personas.json ─────────────────────────────────────────────────────────────
 export interface Persona {
-  persona_id: number      // 0-299
+  persona_id: number      // 0-499
   income_bin: 'low' | 'mid' | 'high'
   age_bin: '18-29' | '30-44' | '45-64' | '65+'
   zip_region: string      // TX region name
@@ -24,6 +24,11 @@ export interface Persona {
   lat: number
   lon: number
   system_prompt: string   // SHARED_PREFIX + DEMOGRAPHIC_SUFFIX
+  occupation?: string
+  industry_exposure?: string
+  education?: string
+  news_consumption?: string
+  investment_exposure?: string
 }
 
 // ─── persona_sentiments.parquet ───────────────────────────────────────────────

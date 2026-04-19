@@ -35,6 +35,12 @@ ZIP_REGIONS: Tuple[str, ...] = (
     "Rio Grande Valley",
     "East Texas",
     "Panhandle",
+    "Central Texas",
+    "Hill Country",
+    "Coastal Bend",
+    "Brazos Valley",
+    "Big Bend",
+    "North Central",
 )
 POLITICAL_LEANS: Tuple[str, ...] = ("R", "D", "I")
 
@@ -48,6 +54,12 @@ REGION_CENTROIDS: Dict[str, Tuple[float, float]] = {
     "Rio Grande Valley": (26.20, -98.23),
     "East Texas": (32.35, -95.30),
     "Panhandle": (35.22, -101.83),
+    "Central Texas": (31.55, -97.13),
+    "Hill Country": (30.24, -99.14),
+    "Coastal Bend": (27.80, -97.40),
+    "Brazos Valley": (30.63, -96.33),
+    "Big Bend": (30.35, -103.66),
+    "North Central": (32.45, -99.73),
 }
 
 # Annual income range per income_bin (used to sample exact $ amount).
@@ -188,6 +200,242 @@ def sample_contextual_anchor(
         # Defensive fallback: never raise, never duplicate prefix structure.
         return "You follow national news regularly and form your own market views."
     return rng.choice(pool)
+
+
+# ---------------------------------------------------------------------------
+# New field samplers (occupation, industry_exposure, education,
+# news_consumption, investment_exposure)
+# ---------------------------------------------------------------------------
+
+# Human-readable phrase mappings used in DEMOGRAPHIC_SUFFIX_TEMPLATE
+OCCUPATION_PHRASES: Dict[str, str] = {
+    "energy_worker": "the energy industry",
+    "tech_worker": "the technology sector",
+    "agriculture": "agriculture",
+    "healthcare": "healthcare",
+    "education": "education",
+    "retail": "retail",
+    "manufacturing": "manufacturing",
+    "service": "the service industry",
+    "government": "government",
+    "retiree": "retirement",
+    "student": "a student role",
+    "small_business": "small business ownership",
+}
+
+INDUSTRY_EXPOSURE_PHRASES: Dict[str, str] = {
+    "energy": "energy",
+    "tech": "technology",
+    "agriculture": "agriculture",
+    "healthcare": "healthcare",
+    "retail": "retail",
+    "manufacturing": "manufacturing",
+    "financial": "financial markets",
+    "none": "no particular sector",
+}
+
+EDUCATION_PHRASES: Dict[str, str] = {
+    "hs": "a high school diploma",
+    "some_college": "some college coursework",
+    "bachelor": "a bachelor's degree",
+    "graduate": "a graduate degree",
+}
+
+NEWS_CONSUMPTION_PHRASES: Dict[str, str] = {
+    "conservative_media": "conservative news sources like Fox News or the Wall Street Journal op-ed page",
+    "liberal_media": "liberal news sources like MSNBC or the New York Times",
+    "mixed": "a mix of news sources across the political spectrum",
+    "minimal": "minimal news consumption",
+}
+
+INVESTMENT_EXPOSURE_PHRASES: Dict[str, str] = {
+    "none": "no investment accounts",
+    "retirement_only": "a retirement account but no active trading",
+    "active_retail": "an active retail brokerage account",
+    "professional": "a professionally managed investment portfolio",
+}
+
+
+def sample_occupation(age_bin: str, zip_region: str, rng: random.Random) -> str:
+    """Sample occupation weighted by age_bin and zip_region."""
+    weights: Dict[str, float] = {
+        "energy_worker": 1.0,
+        "tech_worker": 1.0,
+        "agriculture": 1.0,
+        "healthcare": 1.0,
+        "education": 1.0,
+        "retail": 1.0,
+        "manufacturing": 1.0,
+        "service": 1.0,
+        "government": 1.0,
+        "retiree": 1.0,
+        "student": 1.0,
+        "small_business": 1.0,
+    }
+
+    # Age adjustments
+    if age_bin == "18-29":
+        weights["student"] = 5.0
+        weights["retail"] = 2.0
+        weights["service"] = 2.0
+        weights["retiree"] = 0.1
+    elif age_bin == "65+":
+        weights["retiree"] = 6.0
+        weights["student"] = 0.1
+        weights["energy_worker"] = 0.5
+        weights["tech_worker"] = 0.5
+
+    # Region adjustments
+    if zip_region == "Permian Basin":
+        weights["energy_worker"] = 6.0
+    elif zip_region == "Coastal Bend":
+        weights["energy_worker"] = 3.0
+        weights["service"] = 3.0
+    elif zip_region in ("Dallas-Fort Worth", "Austin Metro"):
+        weights["tech_worker"] = 4.0
+        weights["small_business"] = 2.0
+    elif zip_region in ("Panhandle", "Hill Country", "Brazos Valley", "Central Texas"):
+        weights["agriculture"] = 4.0
+    elif zip_region == "Big Bend":
+        weights["agriculture"] = 3.0
+        weights["service"] = 2.0
+        weights["government"] = 2.0
+
+    occupations = list(weights.keys())
+    w_vals = [weights[o] for o in occupations]
+    return rng.choices(occupations, weights=w_vals, k=1)[0]
+
+
+def sample_industry_exposure(occupation: str, income_bin: str, rng: random.Random) -> str:
+    """Sample industry_exposure correlated with occupation but not deterministic."""
+    # Base mapping from occupation to likely exposure
+    occ_to_industry: Dict[str, str] = {
+        "energy_worker": "energy",
+        "tech_worker": "tech",
+        "agriculture": "agriculture",
+        "healthcare": "healthcare",
+        "education": "none",
+        "retail": "retail",
+        "manufacturing": "manufacturing",
+        "service": "retail",
+        "government": "none",
+        "small_business": "retail",
+        "student": "none",
+        "retiree": "financial",
+    }
+    primary = occ_to_industry.get(occupation, "none")
+
+    # 70% chance of the primary, else pick from alternatives
+    if rng.random() < 0.70:
+        chosen = primary
+    else:
+        alternatives = ["energy", "tech", "agriculture", "healthcare",
+                        "retail", "manufacturing", "financial", "none"]
+        # Weight toward "financial" for high income
+        alt_weights = [1.0] * len(alternatives)
+        if income_bin == "high":
+            fi = alternatives.index("financial")
+            alt_weights[fi] = 3.0
+        chosen = rng.choices(alternatives, weights=alt_weights, k=1)[0]
+
+    # Cap "none" to ~15%: if chosen is "none" and rng says re-roll, pick financial
+    if chosen == "none" and rng.random() > 0.15:
+        if income_bin == "high":
+            chosen = "financial"
+        elif income_bin == "mid":
+            chosen = rng.choice(["retail", "healthcare", "manufacturing"])
+        else:
+            chosen = rng.choice(["retail", "manufacturing"])
+
+    return chosen
+
+
+def sample_education(income_bin: str, rng: random.Random) -> str:
+    """Sample education level with TX ACS marginals, correlated with income."""
+    # Base TX ACS marginals: hs 28%, some_college 30%, bachelor 25%, graduate 17%
+    base: Dict[str, float] = {
+        "hs": 0.28,
+        "some_college": 0.30,
+        "bachelor": 0.25,
+        "graduate": 0.17,
+    }
+    # Shift toward graduate/bachelor for high income, toward hs for low
+    if income_bin == "high":
+        weights = {
+            "hs": 0.08,
+            "some_college": 0.20,
+            "bachelor": 0.38,
+            "graduate": 0.34,
+        }
+    elif income_bin == "low":
+        weights = {
+            "hs": 0.42,
+            "some_college": 0.35,
+            "bachelor": 0.15,
+            "graduate": 0.08,
+        }
+    else:
+        weights = base
+
+    levels = list(weights.keys())
+    w_vals = [weights[lv] for lv in levels]
+    return rng.choices(levels, weights=w_vals, k=1)[0]
+
+
+def sample_news_consumption(political_lean: str, rng: random.Random) -> str:
+    """Sample news consumption correlated strongly with political_lean."""
+    if political_lean == "R":
+        weights = {
+            "conservative_media": 0.60,
+            "mixed": 0.25,
+            "minimal": 0.10,
+            "liberal_media": 0.05,
+        }
+    elif political_lean == "D":
+        weights = {
+            "liberal_media": 0.60,
+            "mixed": 0.25,
+            "minimal": 0.10,
+            "conservative_media": 0.05,
+        }
+    else:  # Independent
+        weights = {
+            "conservative_media": 0.25,
+            "liberal_media": 0.25,
+            "mixed": 0.35,
+            "minimal": 0.15,
+        }
+    options = list(weights.keys())
+    w_vals = [weights[o] for o in options]
+    return rng.choices(options, weights=w_vals, k=1)[0]
+
+
+def sample_investment_exposure(income_bin: str, rng: random.Random) -> str:
+    """Sample investment exposure correlated with income_bin."""
+    if income_bin == "low":
+        weights = {
+            "none": 0.50,
+            "retirement_only": 0.35,
+            "active_retail": 0.14,
+            "professional": 0.01,
+        }
+    elif income_bin == "mid":
+        weights = {
+            "none": 0.20,
+            "retirement_only": 0.50,
+            "active_retail": 0.28,
+            "professional": 0.02,
+        }
+    else:  # high
+        weights = {
+            "none": 0.05,
+            "retirement_only": 0.35,
+            "active_retail": 0.38,
+            "professional": 0.22,
+        }
+    options = list(weights.keys())
+    w_vals = [weights[o] for o in options]
+    return rng.choices(options, weights=w_vals, k=1)[0]
 
 
 def load_acs_strata(csv_path: Path | None = None) -> Dict[str, Dict[str, float]]:
