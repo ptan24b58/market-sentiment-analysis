@@ -63,6 +63,8 @@ set -a && source .env && set +a
 
 python -m scripts.run_yfinance_ingest
 
+python -m scripts.run_a2
+
 # Run tests
 make test
 
@@ -70,7 +72,7 @@ make test
 make sentinel
 
 # Full pipeline (after sentinel PASS)
-make pipeline
+make pipeline or python -m scripts.run_full_pipeline --skip-ingest
 
 # Ablation + reports
 make ablation
@@ -100,3 +102,16 @@ Built with Claude Code + OMC deep-interview → ralplan → autopilot 3-stage pi
 Prior art: Goyal et al. 2024 (NAACL Findings), Yazici 2026 (arXiv), TwinMarket (Yang et al. 2025),
 FDE-LLM (Sci Rep 2025). Loughran-McDonald financial dictionary (2011). FinBERT (Araci 2019).
 Homophily calibration anchors: McPherson-Smith-Lovin-Cook 2001, Halberstam & Knight 2016.
+
+
+
+python -c "
+import pandas as pd
+from src import config
+from src.data.sentinel_selector import select_sentinels
+df = pd.read_parquet(config.DATA_DIR / 'events.parquet')
+df['is_sentinel'] = False
+df = select_sentinels(df)
+df.to_parquet(config.DATA_DIR / 'events.parquet', index=False)
+print(f'events.parquet: {len(df)} events, {int(df[\"is_sentinel\"].sum())} sentinels')
+print(df[df['is_sentinel']][['ticker','headline_text','gdelt_tone']].to_string())"
