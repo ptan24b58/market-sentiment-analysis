@@ -6,10 +6,11 @@ Usage:
 Runs 4 checks in order and prints the FIRST failure:
   1. Are AWS creds loaded in the current process env?
   2. Does `sts get-caller-identity` succeed? (creds reach AWS at all?)
-  3. Does `bedrock list-foundation-models` return Nova Lite? (model access?)
-  4. Does a real `invoke_model` on Nova Lite succeed with a trivial prompt?
+  3. Does `bedrock list-foundation-models` return the configured model?
+  4. Does a real invocation through the app's `invoke_nova_lite` succeed?
 
-Prints the exact exception class + message for each failure so you can fix it.
+Step 4 uses the same function the live pipeline uses (so payload schema
+and model ID stay in sync), rather than hand-rolling a request.
 """
 
 from __future__ import annotations
@@ -61,45 +62,63 @@ def main() -> int:
 
     # ---------- 3. list models ----------
     from src import config
+    target_id = config.BEDROCK_MODEL_ID
+    # Cross-region inference profile ids start with "us."/"eu." etc. — strip the
+    # prefix when matching against listed foundation-model ids, which always
+    # start with the provider name (e.g. "anthropic.claude-...").
+    target_suffix = target_id.split(".", 1)[1] if target_id.startswith(("us.", "eu.", "apac.")) else target_id
     try:
         brc = boto3.client("bedrock", region_name=region)
         models = brc.list_foundation_models()
         ids = [m["modelId"] for m in models.get("modelSummaries", [])]
-        nova = [m for m in ids if "nova-lite" in m.lower()]
-        if nova:
-            print(f"[3/4] OK: {len(ids)} models listed; Nova Lite ids: {nova}")
+        match = [m for m in ids if target_suffix in m or target_id in m]
+        if match:
+            print(f"[3/4] OK: {len(ids)} models listed; configured model matches: {match[:3]}")
         else:
-            print(f"[3/4] FAIL: Nova Lite not listed. First 5 models: {ids[:5]}")
-            print(f"      → Bedrock model access not granted for Nova Lite in region {region}")
-            print(f"      → AWS Console → Bedrock → Model access → Request Amazon Nova Lite")
-            return 3
+            # Cross-region profiles are acceptable even if the base model isn't
+            # in list_foundation_models — they're managed separately. Print a
+            # warning but don't fail.
+            if target_id.startswith(("us.", "eu.", "apac.")):
+                print(f"[3/4] WARN: {len(ids)} models listed; {target_id} is a cross-region "
+                      f"inference profile — not in foundation-models list (expected).")
+            else:
+                print(f"[3/4] FAIL: {target_id} not listed. First 5 models: {ids[:5]}")
+                print(f"      → Bedrock model access not granted for {target_id} in region {region}")
+                print(f"      → AWS Console → Bedrock → Model access → Request the model")
+                return 3
     except Exception as exc:  # noqa: BLE001
         print(f"[3/4] FAIL: list_foundation_models: {type(exc).__name__}: {exc}")
         print(f"      → role lacks 'bedrock:ListFoundationModels' permission, "
-              "or Bedrock is not in region {region}")
+              f"or Bedrock is not in region {region}")
         return 3
 
-    # ---------- 4. real invoke ----------
+    # ---------- 4. real invoke via the app's client (same code path as live) ----------
     try:
-        brt = boto3.client("bedrock-runtime", region_name=region)
-        body = json.dumps({
-            "messages": [{"role": "user", "content": [{"text": "Reply with 0.5"}]}],
-        })
-        resp = brt.invoke_model(modelId=config.BEDROCK_MODEL_ID, body=body)
-        payload = json.loads(resp["body"].read())
-        text = (payload.get("output", {})
-                .get("message", {})
-                .get("content", [{}])[0]
-                .get("text", ""))
-        print(f"[4/4] OK: invoke_model returned: {text!r}")
+        import asyncio
+        from src.llm.bedrock_client import invoke_nova_lite, reset_client
+        reset_client()
+        result = asyncio.run(
+            invoke_nova_lite(
+                "You are a test persona.",
+                "Respond with the single number 0.5 and nothing else.",
+            )
+        )
+        text = result.get("response_text", "").strip()
+        cache_hit = result.get("cache_hit", False)
+        latency = result.get("latency_ms", 0)
+        print(f"[4/4] OK: invoke via {target_id}")
+        print(f"      response_text={text!r}  latency={latency:.0f}ms  cache_hit={cache_hit}")
         return 0
     except Exception as exc:  # noqa: BLE001
         print(f"[4/4] FAIL: invoke_model: {type(exc).__name__}: {exc}")
         print(f"      → most likely cause shown above. Common:")
-        print(f"         - AccessDeniedException → role lacks bedrock:InvokeModel")
-        print(f"         - ValidationException → wrong modelId or region")
+        print(f"         - AccessDeniedException → role lacks bedrock:InvokeModel,")
+        print(f"           or model access not enabled in Bedrock console for {target_id}")
+        print(f"         - ValidationException → wrong modelId string, or payload")
+        print(f"           schema mismatch (Nova vs Anthropic)")
         print(f"         - ThrottlingException → rate-limited, retry")
         print(f"         - ExpiredTokenException → session expired, re-source .env")
+        print(f"         - InvalidSignatureException → clock drift; `sudo date -s ...`")
         return 4
 
 
