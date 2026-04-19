@@ -93,11 +93,14 @@ def _merge_demographics(
     return out
 
 
-def _region_stats(
+def _region_stats_v2(
     rows: list[dict[str, Any]],
     sentiment_col: str = "raw_sentiment",
-) -> dict[str, float]:
-    """Compute mean sentiment per zip_region."""
+) -> dict[str, dict[str, float]]:
+    """Compute mean, population std-dev, and count of sentiment per zip_region."""
+    import math
+    import statistics
+
     totals: dict[str, list[float]] = {}
     for row in rows:
         region = row.get("zip_region")
@@ -109,11 +112,25 @@ def _region_stats(
             f = float(val)
         except (TypeError, ValueError):
             continue
-        import math
         if math.isnan(f):
             continue
         totals.setdefault(region, []).append(f)
-    return {r: sum(vs) / len(vs) for r, vs in totals.items()}
+
+    result: dict[str, dict[str, float]] = {}
+    for region, vs in totals.items():
+        mean = sum(vs) / len(vs)
+        std = statistics.pstdev(vs)  # population std-dev, matches numpy.std(ddof=0)
+        result[region] = {"mean": mean, "std": std, "n": len(vs)}
+    return result
+
+
+def _region_stats(
+    rows: list[dict[str, Any]],
+    sentiment_col: str = "raw_sentiment",
+) -> dict[str, float]:
+    """Thin alias returning old single-number shape for backward compatibility."""
+    v2 = _region_stats_v2(rows, sentiment_col=sentiment_col)
+    return {r: stats["mean"] for r, stats in v2.items()}
 
 
 def _parse_failure_rate(rows: list[dict[str, Any]]) -> float:
@@ -163,10 +180,11 @@ async def simulate_preview(body: dict) -> JSONResponse:
 
     return JSONResponse(
         content={
+            "schema": "v2",
             "phase": "preview",
             "event": event,
             "persona_sentiments": rows_with_demo,
-            "region_stats": _region_stats(rows_with_demo),
+            "region_stats": _region_stats_v2(rows_with_demo),
             "parse_failure_rate": pfr,
             "elapsed_ms": elapsed_ms,
             "sample_size": len(rows_with_demo),
@@ -215,20 +233,21 @@ async def simulate_full(body: dict) -> JSONResponse:
     rows_dyn: list[dict[str, Any]] = df_dyn.to_dict(orient="records")
     rows_with_demo = _merge_demographics(rows_dyn)
 
-    # Build region_stats_dyn: {epsilon_str: {region: mean}}.
-    region_stats_dyn: dict[str, dict[str, float]] = {}
+    # Build region_stats_dyn: {epsilon_str: {region: {mean, std, n}}}.
+    region_stats_dyn: dict[str, dict[str, dict[str, float]]] = {}
     for eps in DEFFUANT_EPSILON_SWEEP:
         col = f"post_dynamics_{eps:g}"
-        region_stats_dyn[f"{eps:g}"] = _region_stats(rows_with_demo, sentiment_col=col)
+        region_stats_dyn[f"{eps:g}"] = _region_stats_v2(rows_with_demo, sentiment_col=col)
 
     elapsed_ms = int((time.perf_counter() - t0) * 1000)
 
     return JSONResponse(
         content={
+            "schema": "v2",
             "phase": "full",
             "event": event,
             "persona_sentiments": rows_with_demo,
-            "region_stats_raw": _region_stats(rows_with_demo, sentiment_col="raw_sentiment"),
+            "region_stats_raw": _region_stats_v2(rows_with_demo, sentiment_col="raw_sentiment"),
             "region_stats_dyn": region_stats_dyn,
             "parse_failure_rate": pfr,
             "elapsed_ms": elapsed_ms,

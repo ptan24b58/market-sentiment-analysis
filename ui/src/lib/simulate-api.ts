@@ -25,21 +25,36 @@ export interface PersonaSentimentRow {
   'post_dynamics_0.4'?: number
 }
 
+/** v2 shape returned by upgraded backend */
+export type RegionStatsV2 = Record<string, { mean: number; std: number; n: number }>
+
 export interface PreviewResult {
+  schema?: 'v2'
   phase: 'preview'
   event: CustomEvent
   persona_sentiments: PersonaSentimentRow[]
-  region_stats: Record<string, number>
+  /** Tolerates both v1 (number) and v2 ({mean, std, n}) */
+  region_stats: RegionStatsV2 | Record<string, number>
   parse_failure_rate: number
   elapsed_ms: number
   sample_size: number
 }
 
-export interface FullResult extends Omit<PreviewResult, 'phase'> {
+export interface FullResult {
+  schema?: 'v2'
   phase: 'full'
-  region_stats_raw: Record<string, number>
-  region_stats_dyn: Record<'0.2' | '0.3' | '0.4', Record<string, number>>
+  event: CustomEvent
+  persona_sentiments: PersonaSentimentRow[]
+  parse_failure_rate: number
+  elapsed_ms: number
+  sample_size: number
+  /** Tolerates both v1 and v2 */
+  region_stats_raw: RegionStatsV2 | Record<string, number>
+  region_stats_dyn: Record<'0.2' | '0.3' | '0.4', RegionStatsV2 | Record<string, number>>
 }
+
+// Keep the old PreviewResult.region_stats field name for callers that reference it
+// via destructuring (backward compat — FullResult previously extended PreviewResult)
 
 export interface SimulateError {
   status: number
@@ -48,6 +63,31 @@ export interface SimulateError {
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
+
+/**
+ * Normalize region_stats from either v1 (Record<string, number>) or
+ * v2 (Record<string, {mean, std, n}>) into the canonical v2 shape.
+ * If given a plain number, treats it as mean with std=0 and n=NaN.
+ */
+export function normalizeRegionStats(
+  raw: RegionStatsV2 | Record<string, number> | unknown
+): RegionStatsV2 {
+  if (!raw || typeof raw !== 'object') return {}
+  const result: RegionStatsV2 = {}
+  for (const [key, val] of Object.entries(raw as Record<string, unknown>)) {
+    if (typeof val === 'number') {
+      result[key] = { mean: val, std: 0, n: NaN }
+    } else if (val && typeof val === 'object' && 'mean' in val) {
+      const v = val as { mean: number; std?: number; n?: number }
+      result[key] = {
+        mean: v.mean,
+        std: v.std ?? 0,
+        n: v.n ?? NaN,
+      }
+    }
+  }
+  return result
+}
 
 async function postSimulate<T>(
   path: '/simulate/preview' | '/simulate/full',

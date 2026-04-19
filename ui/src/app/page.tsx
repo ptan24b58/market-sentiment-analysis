@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useEventContext } from '@/context/EventContext'
 import EventBanner from '@/components/EventBanner'
 import EventList from '@/components/EventList'
@@ -32,6 +32,27 @@ export default function HomePage() {
   const currentSentiments: PersonaSentiment[] = personaSentiments.filter(
     (s) => s.event_id === currentEvent?.event_id
   )
+
+  // Compute regionStats for the Map tab from currentSentiments + personas
+  const regionStats = useMemo(() => {
+    const byRegion = new Map<string, number[]>()
+    for (const s of currentSentiments) {
+      const persona = personas.find((p) => p.persona_id === s.persona_id)
+      if (!persona) continue
+      const score = showPostDynamics ? (s.post_dynamics_03 ?? s.raw_sentiment) : s.raw_sentiment
+      const scores = byRegion.get(persona.zip_region) ?? []
+      scores.push(score)
+      byRegion.set(persona.zip_region, scores)
+    }
+    const result: Record<string, { mean: number; std: number; n: number }> = {}
+    byRegion.forEach((scores, region) => {
+      const n = scores.length
+      const mean = scores.reduce((a, b) => a + b, 0) / n
+      const variance = scores.reduce((a, b) => a + (b - mean) ** 2, 0) / n
+      result[region] = { mean, std: Math.sqrt(variance), n }
+    })
+    return result
+  }, [currentSentiments, personas, showPostDynamics])
 
   return (
     <div className="flex flex-col h-screen bg-surface">
@@ -85,9 +106,9 @@ export default function HomePage() {
               <div className="flex h-full">
                 <div className="flex-1 relative">
                   <ChoroplethMap
-                    sentiments={currentSentiments}
-                    personas={personas}
+                    regionStats={regionStats}
                     showPostDynamics={showPostDynamics}
+                    captionText={showPostDynamics ? 'Post-Deffuant (ε=0.3)' : 'Raw persona scores'}
                   />
                 </div>
 

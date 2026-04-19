@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { SimulateForm } from '@/components/SimulateForm'
 import { PhaseIndicator } from '@/components/PhaseIndicator'
 import ChoroplethMap from '@/components/ChoroplethMap'
@@ -10,7 +10,7 @@ import { AgePanel } from '@/components/SidePanels/AgePanel'
 import { GeographyPanel } from '@/components/SidePanels/GeographyPanel'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Switch } from '@/components/ui/switch'
-import { runPreview, runFull } from '@/lib/simulate-api'
+import { runPreview, runFull, normalizeRegionStats } from '@/lib/simulate-api'
 import type { PersonaSentimentRow, PreviewResult, FullResult, SimulateError } from '@/lib/simulate-api'
 import type { PersonaSentiment, Persona } from '@/types/data'
 
@@ -26,20 +26,20 @@ interface SimulateState {
   personas: Persona[]
   // dyn sentiments: post_dynamics_0.3 overriding raw_sentiment
   dynSentiments: PersonaSentiment[] | null
+  // server-computed region stats (v2 normalized), if available
+  serverRegionStats: Record<string, { mean: number; std: number; n: number }> | null
+  serverDynRegionStats: Record<string, { mean: number; std: number; n: number }> | null
   // phase indicator metadata
   parseFailureRate?: number
   elapsedMs?: number
   errorMessage?: string
 }
 
-// ── Converters ────────────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 /**
  * Convert API PersonaSentimentRow[] into the PersonaSentiment + Persona shapes
  * that the existing side-panels and ChoroplethMap expect.
- *
- * The API already includes all demographic fields on each row, so we derive
- * synthetic Persona objects from the rows — no separate personas.json needed.
  */
 function convertRows(
   rows: PersonaSentimentRow[],
@@ -73,13 +73,39 @@ function convertRows(
 
 /**
  * Build dyn sentiments: replace raw_sentiment with post_dynamics_03
- * so that ChoroplethMap's usePostDynamics=true path reads the right value.
+ * so that the dynOn path reads the right value.
  */
 function buildDynSentiments(sentiments: PersonaSentiment[]): PersonaSentiment[] {
   return sentiments.map((s) => ({
     ...s,
     raw_sentiment: s.post_dynamics_03 ?? s.raw_sentiment,
   }))
+}
+
+/**
+ * Compute region stats client-side from sentiments + personas.
+ * Returns {mean, std (population), n} per region.
+ */
+function computeRegionStats(
+  sentiments: PersonaSentiment[],
+  personas: Persona[]
+): Record<string, { mean: number; std: number; n: number }> {
+  const byRegion = new Map<string, number[]>()
+  for (const s of sentiments) {
+    const persona = personas.find((p) => p.persona_id === s.persona_id)
+    if (!persona) continue
+    const scores = byRegion.get(persona.zip_region) ?? []
+    scores.push(s.raw_sentiment)
+    byRegion.set(persona.zip_region, scores)
+  }
+  const result: Record<string, { mean: number; std: number; n: number }> = {}
+  byRegion.forEach((scores, region) => {
+    const n = scores.length
+    const mean = scores.reduce((a, b) => a + b, 0) / n
+    const variance = scores.reduce((a, b) => a + (b - mean) ** 2, 0) / n
+    result[region] = { mean, std: Math.sqrt(variance), n }
+  })
+  return result
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -89,6 +115,8 @@ const IDLE_STATE: SimulateState = {
   sentiments: [],
   personas: [],
   dynSentiments: null,
+  serverRegionStats: null,
+  serverDynRegionStats: null,
 }
 
 export function SimulateTab() {
@@ -96,12 +124,31 @@ export function SimulateTab() {
   const [dynOn, setDynOn] = useState(false)
 
   const isDynAvailable = state.phase === 'full' && state.dynSentiments !== null
-  const displayedSentiments = dynOn && isDynAvailable ? (state.dynSentiments ?? state.sentiments) : state.sentiments
+  const displayedSentiments =
+    dynOn && isDynAvailable ? (state.dynSentiments ?? state.sentiments) : state.sentiments
+
+  // Compute regionStats: prefer server v2, fall back to client-side computation
+  const regionStats = useMemo(() => {
+    if (dynOn && isDynAvailable) {
+      if (state.serverDynRegionStats) return state.serverDynRegionStats
+      // compute from dyn sentiments
+      return computeRegionStats(state.dynSentiments ?? state.sentiments, state.personas)
+    }
+    if (state.serverRegionStats) return state.serverRegionStats
+    return computeRegionStats(state.sentiments, state.personas)
+  }, [
+    dynOn,
+    isDynAvailable,
+    state.serverRegionStats,
+    state.serverDynRegionStats,
+    state.sentiments,
+    state.dynSentiments,
+    state.personas,
+  ])
 
   async function handleSubmit(headline: string, ticker: string) {
-    // Reset dyn toggle and start preview phase
     setDynOn(false)
-    setState({ phase: 'preview', sentiments: [], personas: [], dynSentiments: null })
+    setState({ phase: 'preview', sentiments: [], personas: [], dynSentiments: null, serverRegionStats: null, serverDynRegionStats: null })
 
     let previewResult: PreviewResult
     try {
@@ -113,6 +160,8 @@ export function SimulateTab() {
         sentiments: [],
         personas: [],
         dynSentiments: null,
+        serverRegionStats: null,
+        serverDynRegionStats: null,
         errorMessage: e.detail ?? e.error,
       })
       return
@@ -128,17 +177,17 @@ export function SimulateTab() {
       sentiments,
       personas,
       dynSentiments: null,
+      serverRegionStats: normalizeRegionStats(previewResult.region_stats),
+      serverDynRegionStats: null,
       parseFailureRate: previewResult.parse_failure_rate,
       elapsedMs: previewResult.elapsed_ms,
     })
 
-    // Fire full run immediately after preview renders
     let fullResult: FullResult
     try {
       fullResult = await runFull({ headline, ticker })
     } catch (err) {
       const e = err as SimulateError
-      // Keep preview data visible, show error in indicator
       setState((prev) => ({
         ...prev,
         phase: 'error',
@@ -157,12 +206,15 @@ export function SimulateTab() {
       sentiments: fullSentiments,
       personas: fullPersonas,
       dynSentiments: buildDynSentiments(fullSentiments),
+      serverRegionStats: normalizeRegionStats(fullResult.region_stats_raw),
+      serverDynRegionStats: normalizeRegionStats(fullResult.region_stats_dyn?.['0.3']),
       parseFailureRate: fullResult.parse_failure_rate,
       elapsedMs: fullResult.elapsed_ms,
     })
   }
 
   const isRunning = state.phase === 'preview'
+  const captionText = dynOn && isDynAvailable ? 'Post-Deffuant (ε=0.3)' : 'Raw persona scores'
 
   return (
     <div className="flex flex-col h-full min-h-0">
@@ -207,16 +259,16 @@ export function SimulateTab() {
           <>
             {/* Map */}
             <div className="flex-1 relative">
-              {isRunning && state.sentiments.length === 0 ? (
-                /* Loading skeleton while waiting for preview */
-                <div className="absolute inset-0 animate-pulse bg-[var(--surface-tertiary)]" />
-              ) : (
-                <ChoroplethMap
-                  sentiments={displayedSentiments}
-                  personas={state.personas}
-                  showPostDynamics={dynOn && isDynAvailable}
-                />
-              )}
+              <ChoroplethMap
+                regionStats={regionStats}
+                showPostDynamics={dynOn && isDynAvailable}
+                captionText={captionText}
+                emptyMessage={
+                  isRunning && state.sentiments.length === 0
+                    ? 'Running preview \u2014 scoring 60 personas\u2026'
+                    : 'No data'
+                }
+              />
             </div>
 
             {/* Side panels */}

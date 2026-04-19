@@ -1,198 +1,225 @@
 'use client'
 
 import { useMemo } from 'react'
-import MapView from 'react-map-gl/maplibre'
-import 'maplibre-gl/dist/maplibre-gl.css'
 import DeckGL from '@deck.gl/react'
-import { GeoJsonLayer } from '@deck.gl/layers'
-import { interpolateRdYlGn } from 'd3-scale-chromatic'
-import type { Persona, PersonaSentiment } from '@/types/data'
+import { GeoJsonLayer, PathLayer, TextLayer } from '@deck.gl/layers'
+import { sentimentToColor, normalizeStd } from '@/lib/sentiment-scale'
+import { BivariateLegend } from '@/components/BivariateLegend'
 import type { FeatureCollection } from 'geojson'
 import texasRegionsRaw from '@/geo/texas_regions.json'
+import texasStateRaw from '@/geo/texas_state.json'
+import regionCentroidsRaw from '@/geo/region_centroids.json'
+
+// ── GeoJSON imports ────────────────────────────────────────────────────────────
+
 const texasRegions = texasRegionsRaw as unknown as FeatureCollection
+const texasState = texasStateRaw as unknown as FeatureCollection
+
+interface Centroid {
+  name: string
+  lat: number
+  lon: number
+}
+
+const centroids = regionCentroidsRaw as unknown as Centroid[]
+
+// ── Design token literals (resolved at module load, used in deck.gl color arrays) ──
+// var(--border-light) = #475569 at 40% alpha → [71, 85, 105, 102]
+const BORDER_LIGHT_RGBA: [number, number, number, number] = [71, 85, 105, 102]
+// var(--border) = #334155 → [51, 65, 85, 255]
+const BORDER_RGBA: [number, number, number, number] = [51, 65, 85, 255]
+// var(--fg) = #f1f5f9 → [241, 245, 249, 255]
+const FG_RGBA: [number, number, number, number] = [241, 245, 249, 255]
+// dark halo for text outlines = #0f172a at 220/255
+const HALO_RGBA: [number, number, number, number] = [15, 23, 42, 220]
+// accent-blue-light at ~16% alpha = [96, 165, 250, 40]
+const HIGHLIGHT_RGBA: [number, number, number, number] = [96, 165, 250, 40]
+// fallback gray for missing data
+const FALLBACK_RGBA: [number, number, number, number] = [96, 96, 112, 80]
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-interface ChoroplethMapProps {
-  sentiments: PersonaSentiment[]
-  personas: Persona[]
-  showPostDynamics: boolean
-}
-
-interface RegionStats {
+export interface RegionStatEntry {
   mean: number
-  count: number
+  std: number
+  n: number
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-/**
- * Convert a sentiment score in [-1, 1] to an RGBA color array
- * using the RdYlGn diverging palette.
- */
-function sentimentToRgba(score: number, alpha = 200): [number, number, number, number] {
-  // Map [-1, 1] -> [0, 1] for interpolateRdYlGn
-  const t = (score + 1) / 2
-  const hex = interpolateRdYlGn(t)
-  // Parse the rgb() string returned by d3
-  const m = hex.match(/\d+/g)
-  if (!m || m.length < 3) return [128, 128, 128, alpha]
-  return [parseInt(m[0]), parseInt(m[1]), parseInt(m[2]), alpha]
+interface ChoroplethMapProps {
+  regionStats: Record<string, RegionStatEntry>
+  showPostDynamics: boolean
+  emptyMessage?: string
+  captionText?: string
 }
 
-/** Aggregate persona sentiments by TX region. */
-function aggregateByRegion(
-  sentiments: PersonaSentiment[],
-  personas: Persona[],
-  usePostDynamics: boolean
-): Map<string, RegionStats> {
-  const regionMap = new Map<string, { sum: number; count: number }>()
+// ── View state ────────────────────────────────────────────────────────────────
 
-  for (const s of sentiments) {
-    const persona = personas.find((p) => p.persona_id === s.persona_id)
-    if (!persona) continue
-
-    const score = usePostDynamics
-      ? (s.post_dynamics_03 ?? s.raw_sentiment)
-      : s.raw_sentiment
-
-    const region = persona.zip_region
-    const existing = regionMap.get(region) ?? { sum: 0, count: 0 }
-    regionMap.set(region, { sum: existing.sum + score, count: existing.count + 1 })
-  }
-
-  const result = new Map<string, RegionStats>()
-  regionMap.forEach((v, k) => {
-    result.set(k, { mean: v.sum / v.count, count: v.count })
-  })
-  return result
+const INITIAL_VIEW_STATE = {
+  longitude: -99,
+  latitude: 31,
+  zoom: 5.3,
+  minZoom: 4,
+  maxZoom: 7,
+  pitch: 0,
+  bearing: 0,
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-const INITIAL_VIEW_STATE = {
-  longitude: -99.9,
-  latitude:  31.5,
-  zoom:      5.4,
-  pitch:     0,
-  bearing:   0,
-}
+export default function ChoroplethMap({
+  regionStats,
+  showPostDynamics,
+  emptyMessage = 'No data',
+  captionText,
+}: ChoroplethMapProps) {
+  const layers = useMemo(() => {
+    const result = []
 
-// Tile source priority:
-//   1. Mapbox via NEXT_PUBLIC_MAPBOX_TOKEN (polished, requires key)
-//   2. Local pre-cached tiles at /tiles/ (requires running prefetch-tiles.sh)
-//   3. CartoDB public CDN (free, no key, works online)
-// For booth-laptop offline mode, run prefetch-tiles.sh before the demo.
-const LOCAL_TILES_AVAILABLE = process.env.NEXT_PUBLIC_USE_LOCAL_TILES === 'true'
-const TILE_URL = LOCAL_TILES_AVAILABLE
-  ? '/tiles/{z}/{x}/{y}.png'
-  : 'https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png'
+    // Layer 1: Texas state outline (PathLayer)
+    const stateFeatures = texasState.features ?? []
+    if (stateFeatures.length > 0) {
+      // Convert FeatureCollection to array of path coordinate arrays for PathLayer
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const pathData: any[] = stateFeatures.flatMap((f: any) => {
+        const geo = f.geometry
+        if (!geo) return []
+        if (geo.type === 'Polygon') return [{ path: geo.coordinates[0] }]
+        if (geo.type === 'MultiPolygon') {
+          return geo.coordinates.map((poly: number[][][]) => ({ path: poly[0] }))
+        }
+        if (geo.type === 'LineString') return [{ path: geo.coordinates }]
+        return []
+      })
 
-const MAP_STYLE = process.env.NEXT_PUBLIC_MAPBOX_TOKEN
-  ? `https://api.mapbox.com/styles/v1/mapbox/dark-v11?access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}`
-  : {
-      version: 8 as const,
-      sources: {
-        'osm-tiles': {
-          type: 'raster' as const,
-          tiles: [TILE_URL],
-          tileSize: 256,
-          attribution: '(c) OpenStreetMap contributors (c) CARTO',
-        },
-      },
-      layers: [
-        {
-          id: 'osm-tiles',
-          type: 'raster' as const,
-          source: 'osm-tiles',
-          minzoom: 0,
-          maxzoom: 19,
-          paint: { 'raster-opacity': 0.6 },
-        },
-      ],
+      if (pathData.length > 0) {
+        result.push(
+          new PathLayer({
+            id: 'state-outline',
+            data: pathData,
+            getPath: (d) => d.path,
+            getColor: BORDER_LIGHT_RGBA,
+            getWidth: 1.5,
+            widthUnits: 'pixels',
+            widthMinPixels: 1,
+            widthMaxPixels: 2,
+            pickable: false,
+          })
+        )
+      }
     }
 
-export default function ChoroplethMap({ sentiments, personas, showPostDynamics }: ChoroplethMapProps) {
-  const regionStats = useMemo(
-    () => aggregateByRegion(sentiments, personas, showPostDynamics),
-    [sentiments, personas, showPostDynamics]
-  )
-
-  const layers = useMemo(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const geoData = texasRegions as any
-
-    return [
+    // Layer 2: Region choropleth (GeoJsonLayer)
+    result.push(
       new GeoJsonLayer({
-        id: 'texas-choropleth',
-        data: geoData,
+        id: 'regions',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data: texasRegions as any,
         pickable: true,
         stroked: true,
         filled: true,
+        autoHighlight: true,
+        highlightColor: HIGHLIGHT_RGBA,
         getFillColor: (feature) => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const regionName: string = (feature as any).properties?.name ?? ''
-          const stats = regionStats.get(regionName)
-          if (!stats) return [60, 60, 80, 120]
-          // stats.mean is already in [-1, 1]; pass directly to color mapper
-          return sentimentToRgba(stats.mean, 180)
+          const name: string = (feature as any).properties?.name ?? ''
+          const entry = regionStats[name]
+          if (!entry || isNaN(entry.mean)) return FALLBACK_RGBA
+          return sentimentToColor(entry.mean, normalizeStd(entry.std))
         },
-        getLineColor: [200, 200, 220, 160],
-        getLineWidth: 1500,
-        lineWidthUnits: 'meters',
+        getLineColor: BORDER_RGBA,
+        getLineWidth: 1,
+        lineWidthUnits: 'pixels',
+        lineWidthMinPixels: 1,
+        lineWidthMaxPixels: 2,
         updateTriggers: {
           getFillColor: [regionStats, showPostDynamics],
         },
-      }),
-    ]
+        transitions: {
+          getFillColor: 400,
+          getLineColor: 200,
+        },
+      })
+    )
+
+    // Layer 3: Region name labels (TextLayer) — skip if centroids not loaded
+    if (centroids.length > 0) {
+      result.push(
+        new TextLayer<Centroid>({
+          id: 'region-labels',
+          data: centroids,
+          getPosition: (d) => [d.lon, d.lat],
+          getText: (d) => d.name,
+          getSize: 11,
+          getColor: FG_RGBA,
+          fontFamily: 'ui-sans-serif, system-ui, sans-serif',
+          outlineWidth: 1.5,
+          outlineColor: HALO_RGBA,
+          fontSettings: { sdf: true },
+          billboard: false,
+          getTextAnchor: 'middle',
+          getAlignmentBaseline: 'center',
+          sizeMinPixels: 10,
+          sizeMaxPixels: 13,
+          pickable: false,
+        })
+      )
+    }
+
+    return result
   }, [regionStats, showPostDynamics])
 
+  const isEmpty = Object.keys(regionStats).length === 0
+
   return (
-    <div className="map-container w-full h-full" aria-label="Texas sentiment choropleth map">
+    <div
+      className="relative w-full h-full"
+      style={{ background: 'var(--surface)' }}
+      role="img"
+      aria-label="Choropleth of mean sentiment by Texas region, saturation indicates dispersion"
+    >
+      {/* Empty state overlay */}
+      {isEmpty && (
+        <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+          <span className="text-sm text-[var(--fg-faint)]">{emptyMessage}</span>
+        </div>
+      )}
+
+      <div className="absolute inset-0">
       <DeckGL
         initialViewState={INITIAL_VIEW_STATE}
-        controller
+        controller={{ dragRotate: false, touchRotate: false }}
         layers={layers}
         getTooltip={({ object }) => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const feature = object as any
           if (!feature?.properties?.name) return null
-          const stats = regionStats.get(feature.properties.name)
-          if (!stats) return { text: feature.properties.name + ' — no data' }
+          const name: string = feature.properties.name
+          const entry = regionStats[name]
+          if (!entry || isNaN(entry.mean)) {
+            return {
+              html: `<div style="font-family:var(--font-sans);font-size:12px;color:var(--fg);background:var(--surface-panel);border:1px solid var(--border);border-radius:4px;padding:6px 10px"><strong>${name}</strong><br/><span style="color:var(--fg-faint)">No data</span></div>`,
+              style: { background: 'none', border: 'none', padding: '0' },
+            }
+          }
+          const { mean, std, n } = entry
           return {
-            text: `${feature.properties.name}\nMean sentiment: ${stats.mean.toFixed(3)}\nPersonas: ${stats.count}`,
+            html: `<div style="font-family:var(--font-sans);font-size:12px;color:var(--fg);background:var(--surface-panel);border:1px solid var(--border);border-radius:4px;padding:6px 10px;min-width:140px"><strong>${name}</strong><br/><span style="font-family:var(--font-mono);font-size:11px;color:var(--fg-dim)">Mean&nbsp;${mean.toFixed(3)}<br/>σ&nbsp;${std.toFixed(3)} · n=${isNaN(n) ? '—' : n}</span></div>`,
+            style: { background: 'none', border: 'none', padding: '0' },
           }
         }}
-      >
-        <MapView
-          mapStyle={MAP_STYLE}
-          style={{ width: '100%', height: '100%' }}
-          reuseMaps
-        />
-      </DeckGL>
-
-      {/* Legend */}
-      <div
-        className="absolute bottom-4 left-4 bg-[#1e293b]/90 border border-slate-600 rounded p-2 text-xs text-slate-300"
-        aria-label="Sentiment color legend"
-      >
-        <div className="text-[10px] font-semibold text-slate-400 mb-1 uppercase tracking-wide">
-          Mean Sentiment
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="text-red-400">-1.0</span>
-          <div
-            className="w-24 h-2.5 rounded"
-            style={{
-              background: 'linear-gradient(to right, #d73027, #fee08b, #1a9850)',
-            }}
-          />
-          <span className="text-green-400">+1.0</span>
-        </div>
-        <div className="mt-1 text-[10px] text-slate-500">
-          {showPostDynamics ? 'Post-Deffuant (epsilon=0.3)' : 'Raw persona scores'}
-        </div>
+      />
       </div>
+
+      <BivariateLegend className="absolute left-3 bottom-3" />
+
+      {captionText && (
+        <div
+          className="absolute left-3 text-[10px] text-[var(--fg-faint)] font-mono"
+          style={{ bottom: '96px' }}
+        >
+          {captionText}
+        </div>
+      )}
     </div>
   )
 }
