@@ -102,20 +102,33 @@ export default function EventList() {
     )
   }
 
+  const totalAgentCalls = events.length * 300
+
   return (
-    <ScrollArea className="h-full">
-      <div role="list" aria-label="Event list">
-        {events.map((event) => (
-          <div key={event.event_id} role="listitem">
-            <EventRow
-              event={event}
-              isActive={event.event_id === currentEventId}
-              onClick={() => setCurrentEventId(event.event_id)}
-              allSentiments={personaSentiments}
-            />
-          </div>
-        ))}
+    <div className="flex flex-col h-full">
+      <div
+        className="flex-none px-3 py-2 border-b border-border bg-surface-panel flex items-baseline justify-between font-mono text-[10px] uppercase tracking-widest"
+        aria-label="Dataset scale"
+      >
+        <span className="text-fg-faint">{events.length} events</span>
+        <span className="text-accent-amber-text tabular-nums">
+          ~{totalAgentCalls.toLocaleString()} agent calls
+        </span>
       </div>
-    </ScrollArea>
+      <ScrollArea className="flex-1 min-h-0">
+        <div role="list" aria-label="Event list">
+          {events.map((event) => (
+            <div key={event.event_id} role="listitem">
+              <EventRow
+                event={event}
+                isActive={event.event_id === currentEventId}
+                onClick={() => setCurrentEventId(event.event_id)}
+                allSentiments={personaSentiments}
+              />
+            </div>
+          ))}
+        </div>
+      </ScrollArea>
+    </div>
   )
 }

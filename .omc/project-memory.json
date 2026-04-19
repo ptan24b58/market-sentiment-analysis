@@ -197,6 +197,30 @@
   },
   "hotPaths": [
     {
+      "path": "ui/src/components/SimulateTab.tsx",
+      "accessCount": 10,
+      "lastAccessed": 1776588292725,
+      "type": "file"
+    },
+    {
+      "path": "ui/src/components/PhaseIndicator.tsx",
+      "accessCount": 6,
+      "lastAccessed": 1776588288553,
+      "type": "file"
+    },
+    {
+      "path": "ui/src/components/EventBanner.tsx",
+      "accessCount": 5,
+      "lastAccessed": 1776587877728,
+      "type": "file"
+    },
+    {
+      "path": "ui/src/components/SidePanels/IncomePanel.tsx",
+      "accessCount": 5,
+      "lastAccessed": 1776587944125,
+      "type": "file"
+    },
+    {
       "path": "src/personas/demographics.py",
       "accessCount": 4,
       "lastAccessed": 1776585238276,
@@ -210,9 +234,33 @@
     },
     {
       "path": "src/config.py",
-      "accessCount": 3,
-      "lastAccessed": 1776585401303,
+      "accessCount": 4,
+      "lastAccessed": 1776587897071,
       "type": "directory"
+    },
+    {
+      "path": "ui/src/components/SidePanels/AgePanel.tsx",
+      "accessCount": 4,
+      "lastAccessed": 1776587938310,
+      "type": "file"
+    },
+    {
+      "path": "ui/src/components/SidePanels/PoliticalPanel.tsx",
+      "accessCount": 4,
+      "lastAccessed": 1776587940367,
+      "type": "file"
+    },
+    {
+      "path": "ui/src/components/SidePanels/GeographyPanel.tsx",
+      "accessCount": 4,
+      "lastAccessed": 1776587942021,
+      "type": "file"
+    },
+    {
+      "path": "ui/src/components/EventList.tsx",
+      "accessCount": 4,
+      "lastAccessed": 1776588102768,
+      "type": "file"
     },
     {
       "path": "ui/src/app/layout.tsx",
@@ -227,22 +275,16 @@
       "type": "file"
     },
     {
-      "path": "ui/src/components/EventBanner.tsx",
-      "accessCount": 3,
-      "lastAccessed": 1776586496314,
-      "type": "file"
-    },
-    {
-      "path": "ui/src/components/SidePanels/IncomePanel.tsx",
-      "accessCount": 3,
-      "lastAccessed": 1776586618354,
-      "type": "file"
-    },
-    {
       "path": "ui/tailwind.config.ts",
       "accessCount": 3,
       "lastAccessed": 1776587065101,
       "type": "file"
+    },
+    {
+      "path": "ui/src",
+      "accessCount": 3,
+      "lastAccessed": 1776588283013,
+      "type": "directory"
     },
     {
       "path": "src/llm/prompts.py",
@@ -260,30 +302,6 @@
       "path": "ui/src/context/EventContext.tsx",
       "accessCount": 2,
       "lastAccessed": 1776586286048,
-      "type": "file"
-    },
-    {
-      "path": "ui/src/components/EventList.tsx",
-      "accessCount": 2,
-      "lastAccessed": 1776586330705,
-      "type": "file"
-    },
-    {
-      "path": "ui/src/components/SidePanels/PoliticalPanel.tsx",
-      "accessCount": 2,
-      "lastAccessed": 1776586632020,
-      "type": "file"
-    },
-    {
-      "path": "ui/src/components/SidePanels/AgePanel.tsx",
-      "accessCount": 2,
-      "lastAccessed": 1776586644998,
-      "type": "file"
-    },
-    {
-      "path": "ui/src/components/SidePanels/GeographyPanel.tsx",
-      "accessCount": 2,
-      "lastAccessed": 1776586656119,
       "type": "file"
     },
     {
@@ -377,16 +395,10 @@
       "type": "file"
     },
     {
-      "path": "ui/src/components/SimulateTab.tsx",
+      "path": "ui/src/components/SidePanels",
       "accessCount": 1,
-      "lastAccessed": 1776586845053,
-      "type": "file"
-    },
-    {
-      "path": "ui/src/components/PhaseIndicator.tsx",
-      "accessCount": 1,
-      "lastAccessed": 1776586855642,
-      "type": "file"
+      "lastAccessed": 1776587868075,
+      "type": "directory"
     }
   ],
   "userDirectives": []

@@ -99,9 +99,9 @@ export function IncomePanel({ sentiments, personas }: IncomePanelProps) {
           </HoverCardTrigger>
           <HoverCardContent className="w-64 text-xs" side="left" align="start">
             <p className="text-fg-dim leading-snug">
-              Personas grouped by household income bracket. Bars show mean raw
+              Agents grouped by household income bracket. Bars show mean raw
               sentiment for each bracket on the current event; <span className="font-mono">n</span> is
-              the number of personas responding.
+              the number of agents responding.
             </p>
           </HoverCardContent>
         </HoverCard>

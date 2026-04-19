@@ -221,12 +221,12 @@ export function SimulateTab() {
       ? ` in ${(fullResult.elapsed_ms / 1000).toFixed(1)}s`
       : ''
     toast.success(`Simulated ${ticker.toUpperCase()}`, {
-      description: `300 personas + Deffuant dynamics${elapsedStr}`,
+      description: `11,000 agents + Deffuant dynamics${elapsedStr}`,
     })
   }
 
   const isRunning = state.phase === 'preview'
-  const captionText = dynOn && isDynAvailable ? 'Post-Deffuant (ε=0.3)' : 'Raw persona scores'
+  const captionText = dynOn && isDynAvailable ? 'Post-Deffuant (ε=0.3)' : 'Raw agent scores'
 
   return (
     <div className="flex flex-col h-full min-h-0">
@@ -264,7 +264,7 @@ export function SimulateTab() {
         {state.phase === 'idle' ? (
           <div className="flex-1 flex items-center justify-center">
             <p className="text-sm text-[var(--fg-faint)] max-w-sm text-center leading-relaxed">
-              Paste a headline above and hit Run to see how 300 Texan personas would react.
+              Paste a headline above and hit Run to see how 11,000 Texan agents would react.
             </p>
           </div>
         ) : (
@@ -277,7 +277,7 @@ export function SimulateTab() {
                 captionText={captionText}
                 emptyMessage={
                   isRunning && state.sentiments.length === 0
-                    ? 'Running preview \u2014 scoring 60 personas\u2026'
+                    ? 'Running preview \u2014 scoring 11,000 agents\u2026'
                     : 'No data'
                 }
               />

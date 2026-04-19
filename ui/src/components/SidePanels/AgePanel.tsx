@@ -88,7 +88,7 @@ export function AgePanel({ sentiments, personas }: AgePanelProps) {
           </HoverCardTrigger>
           <HoverCardContent className="w-64 text-xs" side="left" align="start">
             <p className="text-fg-dim leading-snug">
-              Personas grouped into four age cohorts. Bars show mean raw
+              Agents grouped into four age cohorts. Bars show mean raw
               sentiment per cohort on the current event.
             </p>
           </HoverCardContent>

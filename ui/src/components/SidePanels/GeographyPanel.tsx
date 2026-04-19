@@ -96,7 +96,7 @@ export function GeographyPanel({ sentiments, personas }: GeographyPanelProps) {
           </HoverCardTrigger>
           <HoverCardContent className="w-64 text-xs" side="left" align="start">
             <p className="text-fg-dim leading-snug">
-              Personas grouped by Texas region via their ZIP. Bars show mean
+              Agents grouped by Texas region via their ZIP. Bars show mean
               raw sentiment per region on the current event.
             </p>
           </HoverCardContent>

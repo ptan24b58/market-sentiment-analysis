@@ -108,7 +108,7 @@ export function PoliticalPanel({ sentiments, personas }: PoliticalPanelProps) {
           </HoverCardTrigger>
           <HoverCardContent className="w-64 text-xs" side="left" align="start">
             <p className="text-fg-dim leading-snug">
-              Personas grouped by self-reported political lean (Democrat,
+              Agents grouped by self-reported political lean (Democrat,
               Republican, Independent). Bar color matches the party; direction
               shows mean sentiment on the current event.
             </p>
