@@ -40,9 +40,14 @@ EVENT_WINDOW_END = "2026-04-17"
 DEFAULT_PERSONA_COUNT = 300
 MIN_PERSONA_COUNT_FALLBACK = 150
 
-BEDROCK_MODEL_ID = "amazon.nova-lite-v1:0"
+# Primary inference model for persona sentiment scoring.
+# Claude Sonnet 4.5 — elite persona role-play; ~3x slower than Nova Lite per call.
+# Requires Bedrock model access toggled ON in the AWS console for this region.
+# If AccessDeniedException at runtime: enable "Claude Sonnet 4.5" in Bedrock → Model access.
+BEDROCK_MODEL_ID = "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
 BEDROCK_REGION = "us-east-1"
-BEDROCK_FALLBACK_MODEL_ID = "meta.llama3-1-8b-instruct-v1:0"
+# Fallback only used if explicitly opted into via code; not automatic.
+BEDROCK_FALLBACK_MODEL_ID = "amazon.nova-lite-v1:0"
 
 HOMOPHILY_TARGETS = {
     "political": 0.35,
@@ -74,7 +79,7 @@ MAX_PARSE_RETRIES = 1
 PARSE_FAILURE_ALERT_THRESHOLD = 0.05
 PARSE_FAILURE_TEMPLATE_SWITCH_THRESHOLD = 0.10
 
-BEDROCK_CONCURRENT_SEMAPHORE = 10
+BEDROCK_CONCURRENT_SEMAPHORE = 50
 BEDROCK_MAX_BACKOFF_SECONDS = 30
 BEDROCK_BASE_BACKOFF_SECONDS = 1.0
 

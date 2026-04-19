@@ -1,8 +1,14 @@
 """Async wrapper around boto3 Bedrock invoke_model with prompt caching.
 
+Uses Anthropic's messages schema for Claude models on Bedrock
+(model ID in src/config.BEDROCK_MODEL_ID, currently Claude Sonnet 4.5).
+
 We expose `invoke_nova_lite(system_prompt, user_prompt)` returning a dict
 with response_text, cache_hit (best-effort from response metadata), and
-latency_ms. Retry policy: exponential backoff with jitter on HTTP 429 and
+latency_ms. The function name is kept as `invoke_nova_lite` for backward
+compatibility with existing call sites; it now dispatches to Claude.
+
+Retry policy: exponential backoff with jitter on HTTP 429 and
 boto3 transient ClientError codes.
 
 The boto3 client is created lazily on first call so unit tests can run
@@ -65,49 +71,51 @@ def _build_payload(
     *,
     enable_caching: bool,
 ) -> Dict[str, Any]:
-    """Compose Nova Lite request body with optional system-prompt caching."""
-    system_block: Dict[str, Any] = {"text": system_prompt}
+    """Compose an Anthropic-schema request body for Claude on Bedrock.
+
+    The persona `system_prompt` is the static part shared across every call
+    for a given persona, so we mark it as ephemeral-cacheable. `user_prompt`
+    is the per-event headline/ticker and is never cached.
+    """
+    system_block: Dict[str, Any] = {"type": "text", "text": system_prompt}
     if enable_caching:
-        # Bedrock supports a cachePoint marker on the system block; falls back
-        # silently if the runtime ignores it.
-        system_block["cachePoint"] = {"type": "default"}
+        # Anthropic's prompt caching marker. Cache TTL defaults to 5 min.
+        # Bedrock silently ignores this if the model doesn't support caching.
+        system_block["cache_control"] = {"type": "ephemeral"}
     return {
-        "schemaVersion": "messages-v1",
+        "anthropic_version": "bedrock-2023-05-31",
+        "max_tokens": 32,
+        "temperature": 0.7,
+        "top_p": 0.9,
         "system": [system_block],
         "messages": [
             {
                 "role": "user",
-                "content": [{"text": user_prompt}],
+                "content": [{"type": "text", "text": user_prompt}],
             }
         ],
-        "inferenceConfig": {
-            "maxTokens": 32,
-            "temperature": 0.7,
-            "topP": 0.9,
-        },
     }
 
 
 def _parse_response(raw: Dict[str, Any]) -> Dict[str, Any]:
-    """Extract response_text and cache metadata from a Nova Lite response."""
+    """Extract response_text and cache metadata from a Claude response."""
     text_chunks = []
-    output = raw.get("output", {})
-    message = output.get("message", {})
-    for block in message.get("content", []):
-        t = block.get("text")
-        if t:
-            text_chunks.append(t)
+    for block in raw.get("content", []) or []:
+        if block.get("type") == "text":
+            t = block.get("text")
+            if t:
+                text_chunks.append(t)
     response_text = "".join(text_chunks)
     usage = raw.get("usage", {}) or {}
-    cache_read = usage.get("cacheReadInputTokens", 0) or 0
-    cache_write = usage.get("cacheWriteInputTokens", 0) or 0
+    cache_read = usage.get("cache_read_input_tokens", 0) or 0
+    cache_write = usage.get("cache_creation_input_tokens", 0) or 0
     return {
         "response_text": response_text,
         "cache_hit": cache_read > 0,
         "cache_read_tokens": cache_read,
         "cache_write_tokens": cache_write,
-        "input_tokens": usage.get("inputTokens", 0),
-        "output_tokens": usage.get("outputTokens", 0),
+        "input_tokens": usage.get("input_tokens", 0),
+        "output_tokens": usage.get("output_tokens", 0),
     }
 
 
