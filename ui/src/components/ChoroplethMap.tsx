@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import DeckGL from '@deck.gl/react'
 import { GeoJsonLayer, PathLayer, TextLayer } from '@deck.gl/layers'
 import { Map as MapLibreMap } from 'react-map-gl/maplibre'
@@ -64,13 +64,19 @@ interface ChoroplethMapProps {
 
 const INITIAL_VIEW_STATE = {
   longitude: -99,
-  latitude: 31,
+  latitude: 30.4,
   zoom: 5.3,
   minZoom: 4,
   maxZoom: 7,
-  pitch: 0,
+  pitch: 45,
+  maxPitch: 60,
+  minPitch: 0,
   bearing: 0,
 }
+
+// Extrusion scale: regions tower when sentiment is strong.
+// |mean| = 1.0 → 80 km tall (visible at zoom 5). 0.0 → flat.
+const EXTRUSION_HEIGHT_PER_UNIT_SENTIMENT = 80_000
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
@@ -78,12 +84,10 @@ export default function ChoroplethMap({
   regionStats,
   showPostDynamics,
   emptyMessage = 'No data',
-  captionText,
 }: ChoroplethMapProps) {
-  const [cursor, setCursor] = useState<{ lng: number; lat: number } | null>(null)
-
   const layers = useMemo(() => {
-    const result = []
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const result: any[] = []
 
     // Layer 1: Texas state outline (PathLayer)
     const stateFeatures = texasState.features ?? []
@@ -118,35 +122,50 @@ export default function ChoroplethMap({
       }
     }
 
-    // Layer 2: Region choropleth (GeoJsonLayer) — borderless to avoid
-    // competing with the base map's street/city labels
-    result.push(
-      new GeoJsonLayer({
-        id: 'regions',
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        data: texasRegions as any,
-        pickable: true,
-        stroked: false,
-        filled: true,
-        autoHighlight: true,
-        highlightColor: HIGHLIGHT_RGBA,
-        getFillColor: (feature) => {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const name: string = (feature as any).properties?.name ?? ''
-          const entry = regionStats[name]
-          if (!entry || isNaN(entry.mean)) return FALLBACK_RGBA
-          const [r, g, b, a] = sentimentToColor(entry.mean, normalizeStd(entry.std))
-          // 70% of base alpha to let the dark base tiles read through
-          return [r, g, b, Math.round(a * 0.7)]
-        },
-        updateTriggers: {
-          getFillColor: [regionStats, showPostDynamics],
-        },
-        transitions: {
-          getFillColor: 400,
-        },
-      })
-    )
+    // Layer 2: Region choropleth (GeoJsonLayer) — 3D extruded.
+    // Height encodes |mean sentiment|; flat = neutral, tall = strong reaction.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const regionLayerProps: any = {
+      id: 'regions',
+      data: texasRegions,
+      pickable: true,
+      stroked: false,
+      filled: true,
+      extruded: true,
+      wireframe: false,
+      autoHighlight: true,
+      highlightColor: HIGHLIGHT_RGBA,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      getFillColor: (feature: any) => {
+        const name: string = feature.properties?.name ?? ''
+        const entry = regionStats[name]
+        if (!entry || isNaN(entry.mean)) return FALLBACK_RGBA
+        return sentimentToColor(entry.mean, normalizeStd(entry.std))
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      getElevation: (feature: any) => {
+        const name: string = feature.properties?.name ?? ''
+        const entry = regionStats[name]
+        if (!entry || isNaN(entry.mean)) return 0
+        return Math.abs(entry.mean) * EXTRUSION_HEIGHT_PER_UNIT_SENTIMENT
+      },
+      elevationScale: 1,
+      material: {
+        ambient: 0.45,
+        diffuse: 0.6,
+        shininess: 24,
+        specularColor: [255, 255, 255] as [number, number, number],
+      },
+      updateTriggers: {
+        getFillColor: [regionStats, showPostDynamics],
+        getElevation: [regionStats, showPostDynamics],
+      },
+      transitions: {
+        getFillColor: 400,
+        getElevation: 600,
+      },
+    }
+    result.push(new GeoJsonLayer(regionLayerProps))
 
     // Layer 3 (region labels) intentionally omitted — the CartoDB base map
     // already labels cities/regions, and stacked labels fight for attention.
@@ -175,10 +194,6 @@ export default function ChoroplethMap({
         initialViewState={INITIAL_VIEW_STATE}
         controller={{ dragRotate: false, touchRotate: false }}
         layers={layers}
-        onHover={({ coordinate }) => {
-          if (coordinate) setCursor({ lng: coordinate[0], lat: coordinate[1] })
-          else setCursor(null)
-        }}
         getTooltip={({ object }) => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const feature = object as any
@@ -207,33 +222,6 @@ export default function ChoroplethMap({
       </div>
 
       <BivariateLegend className="absolute left-3 bottom-3" />
-
-      {captionText && (
-        <div
-          className="absolute left-3 text-[10px] font-mono uppercase tracking-widest text-[var(--accent-amber-text)]/80"
-          style={{ bottom: '96px' }}
-        >
-          {captionText}
-        </div>
-      )}
-
-      {/* Tactical coordinate readout — tracks cursor */}
-      <div
-        className="absolute right-3 top-3 font-mono text-[10px] text-[var(--accent-amber-text)] bg-[var(--surface)]/70 border border-[var(--accent-amber-border)]/60 rounded px-2 py-1 tabular-nums pointer-events-none select-none"
-        aria-live="polite"
-      >
-        <div className="opacity-60 uppercase tracking-widest text-[9px] leading-none mb-0.5">
-          Cursor
-        </div>
-        {cursor ? (
-          <>
-            <div>{cursor.lat.toFixed(3)}° {cursor.lat >= 0 ? 'N' : 'S'}</div>
-            <div>{Math.abs(cursor.lng).toFixed(3)}° {cursor.lng >= 0 ? 'E' : 'W'}</div>
-          </>
-        ) : (
-          <div className="opacity-50">— / —</div>
-        )}
-      </div>
 
       {/* Tactical scale / crosshair indicator */}
       <div className="absolute right-3 bottom-3 font-mono text-[9px] text-[var(--accent-amber-text)]/70 pointer-events-none select-none">
