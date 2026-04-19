@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import { toast } from 'sonner'
 import { SimulateForm } from '@/components/SimulateForm'
 import { PhaseIndicator } from '@/components/PhaseIndicator'
 import ChoroplethMap from '@/components/ChoroplethMap'
@@ -155,6 +156,8 @@ export function SimulateTab() {
       previewResult = await runPreview({ headline, ticker })
     } catch (err) {
       const e = err as SimulateError
+      const msg = e.detail ?? e.error
+      toast.error('Preview failed', { description: msg })
       setState({
         phase: 'error',
         sentiments: [],
@@ -162,7 +165,7 @@ export function SimulateTab() {
         dynSentiments: null,
         serverRegionStats: null,
         serverDynRegionStats: null,
-        errorMessage: e.detail ?? e.error,
+        errorMessage: msg,
       })
       return
     }
@@ -188,10 +191,12 @@ export function SimulateTab() {
       fullResult = await runFull({ headline, ticker })
     } catch (err) {
       const e = err as SimulateError
+      const msg = e.detail ?? e.error
+      toast.error('Full run failed', { description: msg })
       setState((prev) => ({
         ...prev,
         phase: 'error',
-        errorMessage: e.detail ?? e.error,
+        errorMessage: msg,
       }))
       return
     }
@@ -210,6 +215,13 @@ export function SimulateTab() {
       serverDynRegionStats: normalizeRegionStats(fullResult.region_stats_dyn?.['0.3']),
       parseFailureRate: fullResult.parse_failure_rate,
       elapsedMs: fullResult.elapsed_ms,
+    })
+
+    const elapsedStr = fullResult.elapsed_ms
+      ? ` in ${(fullResult.elapsed_ms / 1000).toFixed(1)}s`
+      : ''
+    toast.success(`Simulated ${ticker.toUpperCase()}`, {
+      description: `300 personas + Deffuant dynamics${elapsedStr}`,
     })
   }
 

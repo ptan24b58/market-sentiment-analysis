@@ -4,6 +4,7 @@ import { useEventContext } from '@/context/EventContext'
 import type { Event, PersonaSentiment } from '@/types/data'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
+import { Skeleton } from '@/components/ui/skeleton'
 
 function meanSentiment(eventId: string, allSentiments: PersonaSentiment[]): number | null {
   const rows = allSentiments.filter((s) => s.event_id === eventId)
@@ -86,7 +87,18 @@ export default function EventList() {
 
   if (events.length === 0) {
     return (
-      <div className="p-4 text-xs text-fg-faint">Loading events...</div>
+      <div className="p-3 space-y-2" aria-label="Loading events">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="space-y-1.5">
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-3 w-10" />
+              <Skeleton className="h-3 w-14 ml-auto" />
+            </div>
+            <Skeleton className="h-3 w-full" />
+            <Skeleton className="h-3 w-3/4" />
+          </div>
+        ))}
+      </div>
     )
   }
 
