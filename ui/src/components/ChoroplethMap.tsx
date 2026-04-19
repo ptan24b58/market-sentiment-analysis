@@ -1,14 +1,21 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import DeckGL from '@deck.gl/react'
 import { GeoJsonLayer, PathLayer, TextLayer } from '@deck.gl/layers'
+import { Map as MapLibreMap } from 'react-map-gl/maplibre'
+import 'maplibre-gl/dist/maplibre-gl.css'
 import { sentimentToColor, normalizeStd } from '@/lib/sentiment-scale'
 import { BivariateLegend } from '@/components/BivariateLegend'
 import type { FeatureCollection } from 'geojson'
 import texasRegionsRaw from '@/geo/texas_regions.json'
 import texasStateRaw from '@/geo/texas_state.json'
 import regionCentroidsRaw from '@/geo/region_centroids.json'
+
+// CartoDB Dark Matter — free, no token, Google-Maps-dark tactical vibe.
+// Falls back silently to the DeckGL-on-surface look if tiles fail to load.
+const DARK_TACTICAL_STYLE =
+  'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json'
 
 // ── GeoJSON imports ────────────────────────────────────────────────────────────
 
@@ -24,16 +31,17 @@ interface Centroid {
 const centroids = regionCentroidsRaw as unknown as Centroid[]
 
 // ── Design token literals (resolved at module load, used in deck.gl color arrays) ──
-// var(--border-light) = #475569 at 40% alpha → [71, 85, 105, 102]
-const BORDER_LIGHT_RGBA: [number, number, number, number] = [71, 85, 105, 102]
-// var(--border) = #334155 → [51, 65, 85, 255]
-const BORDER_RGBA: [number, number, number, number] = [51, 65, 85, 255]
-// var(--fg) = #f1f5f9 → [241, 245, 249, 255]
-const FG_RGBA: [number, number, number, number] = [241, 245, 249, 255]
-// dark halo for text outlines = #0f172a at 220/255
-const HALO_RGBA: [number, number, number, number] = [15, 23, 42, 220]
-// accent-blue-light at ~16% alpha = [96, 165, 250, 40]
-const HIGHLIGHT_RGBA: [number, number, number, number] = [96, 165, 250, 40]
+// Tactical amber palette — borders & labels pop over the dark base map
+// var(--accent-amber) = #f59e0b at 55% alpha for state outline
+const STATE_OUTLINE_RGBA: [number, number, number, number] = [245, 158, 11, 140]
+// var(--accent-amber-light) = #fbbf24 at 75% alpha — region borders
+const BORDER_RGBA: [number, number, number, number] = [251, 191, 36, 190]
+// var(--accent-amber-text) = #fcd34d — labels
+const LABEL_RGBA: [number, number, number, number] = [252, 211, 77, 255]
+// heavier halo for text over streets — black-ish at 240/255
+const HALO_RGBA: [number, number, number, number] = [10, 14, 22, 240]
+// var(--accent-amber-light) at ~25% alpha — hover tint
+const HIGHLIGHT_RGBA: [number, number, number, number] = [252, 211, 77, 64]
 // fallback gray for missing data
 const FALLBACK_RGBA: [number, number, number, number] = [96, 96, 112, 80]
 
@@ -72,6 +80,8 @@ export default function ChoroplethMap({
   emptyMessage = 'No data',
   captionText,
 }: ChoroplethMapProps) {
+  const [cursor, setCursor] = useState<{ lng: number; lat: number } | null>(null)
+
   const layers = useMemo(() => {
     const result = []
 
@@ -97,7 +107,7 @@ export default function ChoroplethMap({
             id: 'state-outline',
             data: pathData,
             getPath: (d) => d.path,
-            getColor: BORDER_LIGHT_RGBA,
+            getColor: STATE_OUTLINE_RGBA,
             getWidth: 1.5,
             widthUnits: 'pixels',
             widthMinPixels: 1,
@@ -124,13 +134,15 @@ export default function ChoroplethMap({
           const name: string = (feature as any).properties?.name ?? ''
           const entry = regionStats[name]
           if (!entry || isNaN(entry.mean)) return FALLBACK_RGBA
-          return sentimentToColor(entry.mean, normalizeStd(entry.std))
+          const [r, g, b, a] = sentimentToColor(entry.mean, normalizeStd(entry.std))
+          // 70% of base alpha to let the dark base tiles read through
+          return [r, g, b, Math.round(a * 0.7)]
         },
         getLineColor: BORDER_RGBA,
-        getLineWidth: 1,
+        getLineWidth: 1.5,
         lineWidthUnits: 'pixels',
         lineWidthMinPixels: 1,
-        lineWidthMaxPixels: 2,
+        lineWidthMaxPixels: 2.5,
         updateTriggers: {
           getFillColor: [regionStats, showPostDynamics],
         },
@@ -148,13 +160,15 @@ export default function ChoroplethMap({
           id: 'region-labels',
           data: centroids,
           getPosition: (d) => [d.lon, d.lat],
-          getText: (d) => d.name,
+          getText: (d) => d.name.toUpperCase(),
           getSize: 11,
-          getColor: FG_RGBA,
-          fontFamily: 'ui-sans-serif, system-ui, sans-serif',
-          outlineWidth: 1.5,
+          getColor: LABEL_RGBA,
+          fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+          fontWeight: 600,
+          characterSet: 'auto',
+          outlineWidth: 2.5,
           outlineColor: HALO_RGBA,
-          fontSettings: { sdf: true },
+          fontSettings: { sdf: true, fontSize: 64 },
           billboard: false,
           getTextAnchor: 'middle',
           getAlignmentBaseline: 'center',
@@ -189,6 +203,10 @@ export default function ChoroplethMap({
         initialViewState={INITIAL_VIEW_STATE}
         controller={{ dragRotate: false, touchRotate: false }}
         layers={layers}
+        onHover={({ coordinate }) => {
+          if (coordinate) setCursor({ lng: coordinate[0], lat: coordinate[1] })
+          else setCursor(null)
+        }}
         getTooltip={({ object }) => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const feature = object as any
@@ -197,29 +215,66 @@ export default function ChoroplethMap({
           const entry = regionStats[name]
           if (!entry || isNaN(entry.mean)) {
             return {
-              html: `<div style="font-family:var(--font-sans);font-size:12px;color:var(--fg);background:var(--surface-panel);border:1px solid var(--border);border-radius:4px;padding:6px 10px"><strong>${name}</strong><br/><span style="color:var(--fg-faint)">No data</span></div>`,
+              html: `<div style="font-family:var(--font-sans);font-size:12px;color:var(--fg);background:var(--surface-panel);border:1px solid var(--accent-amber-border);border-radius:4px;padding:6px 10px"><strong style="color:var(--accent-amber-text);letter-spacing:0.05em;text-transform:uppercase;font-size:11px">${name}</strong><br/><span style="color:var(--fg-faint)">No data</span></div>`,
               style: { background: 'none', border: 'none', padding: '0' },
             }
           }
           const { mean, std, n } = entry
           return {
-            html: `<div style="font-family:var(--font-sans);font-size:12px;color:var(--fg);background:var(--surface-panel);border:1px solid var(--border);border-radius:4px;padding:6px 10px;min-width:140px"><strong>${name}</strong><br/><span style="font-family:var(--font-mono);font-size:11px;color:var(--fg-dim)">Mean&nbsp;${mean.toFixed(3)}<br/>σ&nbsp;${std.toFixed(3)} · n=${isNaN(n) ? '—' : n}</span></div>`,
+            html: `<div style="font-family:var(--font-sans);font-size:12px;color:var(--fg);background:var(--surface-panel);border:1px solid var(--accent-amber-border);border-radius:4px;padding:6px 10px;min-width:140px;box-shadow:0 4px 12px rgba(0,0,0,0.5)"><strong style="color:var(--accent-amber-text);letter-spacing:0.05em;text-transform:uppercase;font-size:11px">${name}</strong><br/><span style="font-family:var(--font-mono);font-size:11px;color:var(--fg-dim)">MEAN&nbsp;${mean >= 0 ? '+' : ''}${mean.toFixed(3)}<br/>&sigma;&nbsp;${std.toFixed(3)} &middot; n=${isNaN(n) ? '—' : n}</span></div>`,
             style: { background: 'none', border: 'none', padding: '0' },
           }
         }}
-      />
+      >
+        <MapLibreMap
+          reuseMaps
+          mapStyle={DARK_TACTICAL_STYLE}
+          attributionControl={false}
+        />
+      </DeckGL>
       </div>
 
       <BivariateLegend className="absolute left-3 bottom-3" />
 
       {captionText && (
         <div
-          className="absolute left-3 text-[10px] text-[var(--fg-faint)] font-mono"
+          className="absolute left-3 text-[10px] font-mono uppercase tracking-widest text-[var(--accent-amber-text)]/80"
           style={{ bottom: '96px' }}
         >
           {captionText}
         </div>
       )}
+
+      {/* Tactical coordinate readout — tracks cursor */}
+      <div
+        className="absolute right-3 top-3 font-mono text-[10px] text-[var(--accent-amber-text)] bg-[var(--surface)]/70 border border-[var(--accent-amber-border)]/60 rounded px-2 py-1 tabular-nums pointer-events-none select-none"
+        aria-live="polite"
+      >
+        <div className="opacity-60 uppercase tracking-widest text-[9px] leading-none mb-0.5">
+          Cursor
+        </div>
+        {cursor ? (
+          <>
+            <div>{cursor.lat.toFixed(3)}° {cursor.lat >= 0 ? 'N' : 'S'}</div>
+            <div>{Math.abs(cursor.lng).toFixed(3)}° {cursor.lng >= 0 ? 'E' : 'W'}</div>
+          </>
+        ) : (
+          <div className="opacity-50">— / —</div>
+        )}
+      </div>
+
+      {/* Tactical scale / crosshair indicator */}
+      <div className="absolute right-3 bottom-3 font-mono text-[9px] text-[var(--accent-amber-text)]/70 pointer-events-none select-none">
+        <svg width="72" height="18" viewBox="0 0 72 18">
+          <line x1="2" y1="12" x2="70" y2="12" stroke="currentColor" strokeWidth="1" />
+          <line x1="2" y1="8" x2="2" y2="16" stroke="currentColor" strokeWidth="1" />
+          <line x1="36" y1="10" x2="36" y2="14" stroke="currentColor" strokeWidth="1" />
+          <line x1="70" y1="8" x2="70" y2="16" stroke="currentColor" strokeWidth="1" />
+          <text x="36" y="6" textAnchor="middle" fill="currentColor" fontSize="8">
+            ~100 km
+          </text>
+        </svg>
+      </div>
     </div>
   )
 }

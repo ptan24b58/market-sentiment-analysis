@@ -173,6 +173,12 @@
   },
   "hotPaths": [
     {
+      "path": "src/components/ChoroplethMap.tsx",
+      "accessCount": 7,
+      "lastAccessed": 1776575553156,
+      "type": "file"
+    },
+    {
       "path": "src/app/page.tsx",
       "accessCount": 6,
       "lastAccessed": 1776572304510,
@@ -206,12 +212,6 @@
       "path": "src/context/EventContext.tsx",
       "accessCount": 1,
       "lastAccessed": 1776571097175,
-      "type": "file"
-    },
-    {
-      "path": "src/components/ChoroplethMap.tsx",
-      "accessCount": 1,
-      "lastAccessed": 1776572142186,
       "type": "file"
     },
     {
