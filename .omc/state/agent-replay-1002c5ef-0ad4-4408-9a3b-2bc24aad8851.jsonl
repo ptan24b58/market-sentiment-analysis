@@ -26,3 +26,11 @@
 {"t":0,"agent":"a18e78b","agent_type":"executor","event":"agent_stop","success":true,"duration_ms":967865}
 {"t":0,"agent":"a780386","agent_type":"executor","event":"agent_stop","success":true,"duration_ms":553481}
 {"t":0,"agent":"system","event":"skill_invoked","skill_name":"oh-my-claudecode:cancel"}
+{"t":0,"agent":"af07912","agent_type":"unknown","event":"agent_stop","success":true}
+{"t":0,"agent":"a633399","agent_type":"unknown","event":"agent_stop","success":true}
+{"t":0,"agent":"a9efe4f","agent_type":"unknown","event":"agent_stop","success":true}
+{"t":0,"agent":"a7542d8","agent_type":"unknown","event":"agent_stop","success":true}
+{"t":0,"agent":"a26e08a","agent_type":"unknown","event":"agent_stop","success":true}
+{"t":0,"agent":"ac273b0","agent_type":"unknown","event":"agent_stop","success":true}
+{"t":0,"agent":"a199d05","agent_type":"unknown","event":"agent_stop","success":true}
+{"t":0,"agent":"a370c7e","agent_type":"unknown","event":"agent_stop","success":true}

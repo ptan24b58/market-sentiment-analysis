@@ -20,6 +20,34 @@ from src.config import GDELT_ENTITY_CONFIDENCE_MIN, GDELT_TONE_MAGNITUDE_MIN
 logger = logging.getLogger(__name__)
 
 
+def apply_stage1_filter_relaxed(df: pd.DataFrame) -> pd.DataFrame:
+    """Relaxed stage-1 filter for non-GDELT sources (e.g., yfinance fallback).
+
+    Drops only: null headline, null timestamp, null ticker. Keeps all events
+    regardless of tone magnitude / entity confidence / theme count, since
+    those fields are heuristic for non-GDELT sources.
+
+    Plan R2 mitigation: when GDELT rate-limits your IP, the yfinance fallback
+    needs a more permissive filter because its `gdelt_tone` is an estimate and
+    often falls below the 2.0 threshold.
+    """
+    if df.empty:
+        return df
+    mask = (
+        df["headline_text"].notna()
+        & (df["headline_text"].astype(str).str.len() > 0)
+        & df["timestamp"].notna()
+        & df["ticker"].notna()
+    )
+    filtered = df.loc[mask].reset_index(drop=True)
+    logger.info(
+        "Relaxed stage-1 filter: %d/%d events survived (null-field drop only)",
+        len(filtered),
+        len(df),
+    )
+    return filtered
+
+
 def apply_stage1_filter(df: pd.DataFrame) -> pd.DataFrame:
     """Apply the three stage-1 material-event criteria to *df*.
 

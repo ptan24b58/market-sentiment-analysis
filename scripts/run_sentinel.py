@@ -44,20 +44,26 @@ async def _amain() -> int:
         logger.error("No events marked is_sentinel=True")
         return 2
 
-    result = await run_sentinel_gate(
+    diag = await run_sentinel_gate(
         sentinel_events=sentinel_events,
         personas=personas,
         invoke_fn=invoke_nova_lite,
     )
 
-    diag = result.get("diagnostics", {})
+    variances = [e.variance for e in diag.per_event]
     logger.info(
-        "Sentinel gate: gate_pass=%s variances=%s parse_failure_rate=%s",
-        diag.get("gate_pass"),
-        diag.get("variances"),
-        diag.get("parse_failure_rate"),
+        "Sentinel gate: gate_pass=%s pass_count=%d/%d variances=%s parse_failure_rate=%.3f",
+        diag.gate_pass,
+        diag.pass_count,
+        diag.pass_required,
+        [f"{v:.3f}" for v in variances],
+        diag.parse_failure_rate,
     )
-    return 0 if diag.get("gate_pass") else 1
+    if diag.template_switch_recommended:
+        logger.warning(
+            "parse_failure_rate > 10%% — consider switching to STRUCTURED_FALLBACK_PROMPT"
+        )
+    return 0 if diag.gate_pass else 1
 
 
 def main() -> None:

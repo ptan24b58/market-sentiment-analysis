@@ -59,9 +59,9 @@ Census ACS TX ─► 300 personas ──────────────┤ 
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
-# AWS credentials (copy and fill in)
-cp .env.example .env
-# then: source .env
+set -a && source .env && set +a
+
+python -m scripts.run_yfinance_ingest
 
 # Run tests
 make test

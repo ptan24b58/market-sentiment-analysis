@@ -84,26 +84,34 @@ async def _amain(argv: list[str] | None = None) -> int:
         sentinel_events = events_final_df[events_final_df["is_sentinel"]].to_dict("records")
         all_events = events_final_df.to_dict("records")
 
-        sentinel_result = await run_sentinel_gate(
+        sentinel_diag = await run_sentinel_gate(
             sentinel_events=sentinel_events,
             personas=personas,
             invoke_fn=invoke_nova_lite,
         )
-        if not sentinel_result.get("diagnostics", {}).get("gate_pass"):
+        variances = [e.variance for e in sentinel_diag.per_event]
+        logger.info(
+            "Sentinel: gate_pass=%s pass_count=%d/%d variances=%s parse_failure_rate=%.3f",
+            sentinel_diag.gate_pass,
+            sentinel_diag.pass_count,
+            sentinel_diag.pass_required,
+            [f"{v:.3f}" for v in variances],
+            sentinel_diag.parse_failure_rate,
+        )
+        if not sentinel_diag.gate_pass:
             logger.error("SENTINEL FAILED — abort. See data/sentinel_diagnostics.json.")
             return 1
 
-        batch_result = await run_full_batch(
+        df_persona_sentiments = await run_full_batch(
             events=all_events,
             personas=personas,
             invoke_fn=invoke_nova_lite,
         )
-        df_persona_sentiments = batch_result.get("sentiments") if isinstance(batch_result, dict) else batch_result
-        if df_persona_sentiments is None:
-            df_persona_sentiments = pd.read_parquet(config.DATA_DIR / "persona_sentiments.parquet")
 
         graph = json.loads((config.DATA_DIR / "social_graph.json").read_text())
-        df_persona_sentiments = run_dynamics_sweep(persona_sentiments=df_persona_sentiments, graph=graph)
+        df_persona_sentiments, _dynamics_diag = run_dynamics_sweep(
+            persona_sentiments=df_persona_sentiments, graph=graph
+        )
         df_persona_sentiments.to_parquet(config.DATA_DIR / "persona_sentiments.parquet", index=False)
 
         build_signal_files(persona_sentiments_path=config.DATA_DIR / "persona_sentiments.parquet")

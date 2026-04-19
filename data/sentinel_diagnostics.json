@@ -1,0 +1,46 @@
+{
+  "per_event": [
+    {
+      "event_id": "ee16ec3b-3e13-497e-b92d-766f8f34fd58",
+      "n_personas": 300,
+      "n_valid": 300,
+      "variance": 0.0007048888888888885,
+      "std": 0.026549743668986495,
+      "mean": 0.9946666666666666,
+      "bimodality_index": 0.8937930677468126,
+      "passes_threshold": false
+    },
+    {
+      "event_id": "3bf14ca5-a3fa-44bc-945e-83139485de7d",
+      "n_personas": 300,
+      "n_valid": 300,
+      "variance": 0.02323055555555556,
+      "std": 0.1524157326379254,
+      "mean": 0.7916666666666666,
+      "bimodality_index": 0.4828836802419359,
+      "passes_threshold": true
+    },
+    {
+      "event_id": "80417df9-8d08-4bdf-ac30-c93fcd3f92d2",
+      "n_personas": 300,
+      "n_valid": 300,
+      "variance": 0.033051555555555556,
+      "std": 0.18180086786249278,
+      "mean": 0.08533333333333334,
+      "bimodality_index": 0.5062749284479992,
+      "passes_threshold": true
+    }
+  ],
+  "parse_failure_rate": 0.0,
+  "parse_retry_rate": 0.0,
+  "pass_count": 2,
+  "pass_required": 2,
+  "gate_pass": true,
+  "template_switch_recommended": false,
+  "thresholds": {
+    "variance_min": 0.1,
+    "events_required": 3,
+    "passes_required": 2,
+    "parse_failure_template_switch": 0.1
+  }
+}

@@ -30,7 +30,8 @@ logger = logging.getLogger(__name__)
 
 # GDELT DOC API parameters.
 _MAX_RECORDS = 250  # API hard cap per request.
-_BACKOFF_BASE = 2.0  # seconds
+_BACKOFF_BASE = 5.0  # seconds — raised from 2s because GDELT's rate-limit
+                     # window is ~15s; a 2s retry almost always re-trips it.
 _BACKOFF_MAX = 60.0  # seconds
 _MAX_RETRIES = 5
 
@@ -248,8 +249,9 @@ def ingest_gdelt(
                 ev = _article_to_event(art, ticker)
                 if ev is not None:
                     all_raw.append(ev)
-            # Polite delay between queries.
-            time.sleep(0.5)
+            # Polite delay between queries — GDELT free tier rate-limits
+            # aggressively at <5s spacing. 5s stays below their trigger.
+            time.sleep(5.0)
 
     logger.info("Total raw events before dedup: %d", len(all_raw))
     deduped = _deduplicate(all_raw)

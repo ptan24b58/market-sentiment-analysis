@@ -79,7 +79,16 @@ const INITIAL_VIEW_STATE = {
   bearing:   0,
 }
 
-// Use local tiles when NEXT_PUBLIC_MAPBOX_TOKEN is not set
+// Tile source priority:
+//   1. Mapbox via NEXT_PUBLIC_MAPBOX_TOKEN (polished, requires key)
+//   2. Local pre-cached tiles at /tiles/ (requires running prefetch-tiles.sh)
+//   3. CartoDB public CDN (free, no key, works online)
+// For booth-laptop offline mode, run prefetch-tiles.sh before the demo.
+const LOCAL_TILES_AVAILABLE = process.env.NEXT_PUBLIC_USE_LOCAL_TILES === 'true'
+const TILE_URL = LOCAL_TILES_AVAILABLE
+  ? '/tiles/{z}/{x}/{y}.png'
+  : 'https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png'
+
 const MAP_STYLE = process.env.NEXT_PUBLIC_MAPBOX_TOKEN
   ? `https://api.mapbox.com/styles/v1/mapbox/dark-v11?access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}`
   : {
@@ -87,9 +96,9 @@ const MAP_STYLE = process.env.NEXT_PUBLIC_MAPBOX_TOKEN
       sources: {
         'osm-tiles': {
           type: 'raster' as const,
-          tiles: ['/tiles/{z}/{x}/{y}.png'],
+          tiles: [TILE_URL],
           tileSize: 256,
-          attribution: '(c) OpenStreetMap contributors',
+          attribution: '(c) OpenStreetMap contributors (c) CARTO',
         },
       },
       layers: [
@@ -99,7 +108,7 @@ const MAP_STYLE = process.env.NEXT_PUBLIC_MAPBOX_TOKEN
           source: 'osm-tiles',
           minzoom: 0,
           maxzoom: 19,
-          paint: { 'raster-opacity': 0.5 },
+          paint: { 'raster-opacity': 0.6 },
         },
       ],
     }

@@ -1,4 +1,4 @@
-We are at a UT hackathon which is 2 days and we are using claude code to make our project. We are doing the finance track and trying to impress Jane Street and JRT judges. Our core idea is to    
+We are at a UT hackathon which is 2 days and we are using claude code to make our project. We are doing the finance track and trying to impress Jane Street and HRT judges. Our core idea is to    
 use LLMs with prompts telling them they are different people representative of a real population like Texas in order to predict market sentiment to news about different companies, which seems like it could be useful as an input   
 for trading. For example, who reacts to news about Tesla building a terrafab in austin, if at all. Dimensions to consider might be political stances, income, geographic location etc. We need to figure out what to backtest our LLM 
  simulation on that their industry considers a reliable sentiment analysis indicator. Also, a naive LLM distribution seems like it would discount the effect of social interactions, so we want some sort of social graph baked into  
