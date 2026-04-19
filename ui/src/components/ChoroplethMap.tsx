@@ -1,12 +1,12 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useState, useCallback } from 'react'
 import DeckGL from '@deck.gl/react'
+import { LinearInterpolator } from '@deck.gl/core'
 import { GeoJsonLayer, PathLayer, TextLayer } from '@deck.gl/layers'
 import { Map as MapLibreMap } from 'react-map-gl/maplibre'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { sentimentToColor, normalizeStd } from '@/lib/sentiment-scale'
-import { BivariateLegend } from '@/components/BivariateLegend'
 import type { FeatureCollection } from 'geojson'
 import texasRegionsRaw from '@/geo/texas_regions.json'
 import texasStateRaw from '@/geo/texas_state.json'
@@ -85,6 +85,20 @@ export default function ChoroplethMap({
   showPostDynamics,
   emptyMessage = 'No data',
 }: ChoroplethMapProps) {
+  const [is3D, setIs3D] = useState(true)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [viewState, setViewState] = useState<any>(INITIAL_VIEW_STATE)
+
+  const setMode = useCallback((mode3D: boolean) => {
+    setIs3D(mode3D)
+    setViewState((prev: { pitch: number }) => ({
+      ...prev,
+      pitch: mode3D ? 45 : 0,
+      transitionDuration: 600,
+      transitionInterpolator: new LinearInterpolator(['pitch']),
+    }))
+  }, [])
+
   const layers = useMemo(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const result: any[] = []
@@ -144,6 +158,7 @@ export default function ChoroplethMap({
       },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       getElevation: (feature: any) => {
+        if (!is3D) return 0
         const name: string = feature.properties?.name ?? ''
         const entry = regionStats[name]
         if (!entry || isNaN(entry.mean)) return 0
@@ -158,7 +173,7 @@ export default function ChoroplethMap({
       },
       updateTriggers: {
         getFillColor: [regionStats, showPostDynamics],
-        getElevation: [regionStats, showPostDynamics],
+        getElevation: [regionStats, showPostDynamics, is3D],
       },
       transitions: {
         getFillColor: 400,
@@ -171,7 +186,7 @@ export default function ChoroplethMap({
     // already labels cities/regions, and stacked labels fight for attention.
 
     return result
-  }, [regionStats, showPostDynamics])
+  }, [regionStats, showPostDynamics, is3D])
 
   const isEmpty = Object.keys(regionStats).length === 0
 
@@ -191,7 +206,8 @@ export default function ChoroplethMap({
 
       <div className="absolute inset-0">
       <DeckGL
-        initialViewState={INITIAL_VIEW_STATE}
+        viewState={viewState}
+        onViewStateChange={({ viewState: v }) => setViewState(v)}
         controller={{ dragRotate: false, touchRotate: false }}
         layers={layers}
         getTooltip={({ object }) => {
@@ -221,7 +237,31 @@ export default function ChoroplethMap({
       </DeckGL>
       </div>
 
-      <BivariateLegend className="absolute left-3 bottom-3" />
+      {/* 2D / 3D mode toggle */}
+      <div
+        className="absolute right-3 top-3 flex items-stretch rounded border border-[var(--accent-amber-border)]/60 bg-[var(--surface)]/70 overflow-hidden font-mono text-[10px] uppercase tracking-widest select-none backdrop-blur-sm"
+        role="group"
+        aria-label="Toggle 2D or 3D map view"
+      >
+        {(['2D', '3D'] as const).map((mode) => {
+          const active = (mode === '3D') === is3D
+          return (
+            <button
+              key={mode}
+              type="button"
+              onClick={() => setMode(mode === '3D')}
+              aria-pressed={active}
+              className={`px-2.5 py-1 transition-colors ${
+                active
+                  ? 'bg-[var(--accent-amber)]/25 text-[var(--accent-amber-text)]'
+                  : 'text-[var(--accent-amber-text)]/50 hover:text-[var(--accent-amber-text)]/80'
+              }`}
+            >
+              {mode}
+            </button>
+          )
+        })}
+      </div>
 
       {/* Tactical scale / crosshair indicator */}
       <div className="absolute right-3 bottom-3 font-mono text-[9px] text-[var(--accent-amber-text)]/70 pointer-events-none select-none">

@@ -174,8 +174,8 @@
   "hotPaths": [
     {
       "path": "src/components/ChoroplethMap.tsx",
-      "accessCount": 21,
-      "lastAccessed": 1776576852571,
+      "accessCount": 28,
+      "lastAccessed": 1776577603391,
       "type": "file"
     },
     {
