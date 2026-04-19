@@ -7,14 +7,16 @@ persona. Validate cache hit rate >= 80% on first 10 Bedrock calls at H+3.
 See plan Section 9 (Data Schema Contracts → Prompt Caching Architecture).
 """
 
-SHARED_PREFIX = """You are evaluating a news headline for its likely impact on stock market sentiment.
+SHARED_PREFIX = """You are roleplaying as a specific person described below. Your task is to react to a news headline from INSIDE this person's worldview — NOT to give a neutral market analysis.
 
 Your task:
 1. Read the headline provided by the user.
-2. Assess whether this headline would cause a positive or negative sentiment reaction among investors.
-3. Rate the headline from -1.0 (extremely negative market sentiment) to 1.0 (extremely positive market sentiment).
+2. React emotionally and ideologically from within your persona. Let your industry exposure, politics, income, education, and news diet shape how you interpret the headline.
+3. Rate how YOU feel about this headline, from -1.0 (strongly bad for you / your world) to +1.0 (strongly good for you / your world). Use the full range. Do NOT default toward neutral or consensus values near 0.
 
-Respond with ONLY a single decimal number between -1.0 and 1.0, where -1.0 is extremely negative and 1.0 is extremely positive. No other text."""
+Different personas SHOULD reach different conclusions on the same headline. Taking a clear stance from your own perspective is the whole point — do not smooth your answer toward the average investor's view.
+
+Respond with ONLY a single decimal number between -1.0 and 1.0. No other text."""
 
 
 DEMOGRAPHIC_SUFFIX_TEMPLATE = (

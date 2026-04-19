@@ -1,0 +1,297 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1776583971956,
+  "projectRoot": "/home/tan/Documents/market_sentiment_analysis",
+  "techStack": {
+    "languages": [
+      {
+        "name": "Python",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "pyproject.toml",
+          "requirements.txt"
+        ]
+      },
+      {
+        "name": "C/C++",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "Makefile"
+        ]
+      }
+    ],
+    "frameworks": [],
+    "packageManager": "pip",
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": "make build",
+    "testCommand": "make test",
+    "lintCommand": "ruff check",
+    "devCommand": null,
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "docs",
+      "scripts",
+      "src",
+      "tests"
+    ],
+    "gitBranches": {
+      "defaultBranch": "main",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "__pycache__": {
+      "path": "__pycache__",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1776583971942,
+      "keyFiles": [
+        "conftest.cpython-313-pytest-9.0.3.pyc"
+      ]
+    },
+    "data": {
+      "path": "data",
+      "purpose": "Data files",
+      "fileCount": 20,
+      "lastAccessed": 1776583971947,
+      "keyFiles": [
+        "ablation_results.json",
+        "ablation_table.csv",
+        "abnormal_returns.parquet",
+        "acs_strata.csv",
+        "events.parquet"
+      ]
+    },
+    "docs": {
+      "path": "docs",
+      "purpose": "Documentation",
+      "fileCount": 2,
+      "lastAccessed": 1776583971948,
+      "keyFiles": [
+        "architecture.md",
+        "runbook.md"
+      ]
+    },
+    "reports": {
+      "path": "reports",
+      "purpose": null,
+      "fileCount": 3,
+      "lastAccessed": 1776583971949,
+      "keyFiles": [
+        "ablation_poster.md",
+        "methodology.md",
+        "pitch_talking_points.md"
+      ]
+    },
+    "scripts": {
+      "path": "scripts",
+      "purpose": "Build/utility scripts",
+      "fileCount": 13,
+      "lastAccessed": 1776583971950,
+      "keyFiles": [
+        "__init__.py",
+        "build_region_geojson.py",
+        "check_bedrock.py",
+        "dev.sh",
+        "generate_reports.py"
+      ]
+    },
+    "src": {
+      "path": "src",
+      "purpose": "Source code",
+      "fileCount": 2,
+      "lastAccessed": 1776583971950,
+      "keyFiles": [
+        "__init__.py",
+        "config.py"
+      ]
+    },
+    "tests": {
+      "path": "tests",
+      "purpose": "Test files",
+      "fileCount": 2,
+      "lastAccessed": 1776583971951,
+      "keyFiles": [
+        "__init__.py",
+        "conftest.py"
+      ]
+    },
+    "ui": {
+      "path": "ui",
+      "purpose": null,
+      "fileCount": 10,
+      "lastAccessed": 1776583971951,
+      "keyFiles": [
+        "components.json",
+        "next-env.d.ts",
+        "next.config.js",
+        "package-lock.json",
+        "package.json"
+      ]
+    },
+    "src/api": {
+      "path": "src/api",
+      "purpose": "API routes",
+      "fileCount": 5,
+      "lastAccessed": 1776583971951,
+      "keyFiles": [
+        "__init__.py",
+        "simulate.py",
+        "stratified.py"
+      ]
+    },
+    "src/data": {
+      "path": "src/data",
+      "purpose": "Data files",
+      "fileCount": 7,
+      "lastAccessed": 1776583971952,
+      "keyFiles": [
+        "__init__.py",
+        "event_filter.py",
+        "gdelt_ingest.py"
+      ]
+    },
+    "tests/fixtures": {
+      "path": "tests/fixtures",
+      "purpose": "Test fixtures",
+      "fileCount": 2,
+      "lastAccessed": 1776583971952,
+      "keyFiles": [
+        "__init__.py",
+        "gdelt_mock_response.json"
+      ]
+    },
+    "ui/node_modules": {
+      "path": "ui/node_modules",
+      "purpose": "Dependencies",
+      "fileCount": 1,
+      "lastAccessed": 1776583971955,
+      "keyFiles": []
+    },
+    "ui/out": {
+      "path": "ui/out",
+      "purpose": "Build output",
+      "fileCount": 3,
+      "lastAccessed": 1776583971956,
+      "keyFiles": [
+        "404.html",
+        "index.html",
+        "index.txt"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "ui/src/app/page.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1776584339724,
+      "type": "file"
+    },
+    {
+      "path": "ui/src/app/globals.css",
+      "accessCount": 2,
+      "lastAccessed": 1776584343397,
+      "type": "file"
+    },
+    {
+      "path": "src/llm/prompts.py",
+      "accessCount": 2,
+      "lastAccessed": 1776584346369,
+      "type": "file"
+    },
+    {
+      "path": "ui/src/components/EventBanner.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1776584346758,
+      "type": "file"
+    },
+    {
+      "path": "ui/tailwind.config.ts",
+      "accessCount": 2,
+      "lastAccessed": 1776584349709,
+      "type": "file"
+    },
+    {
+      "path": "ui/package.json",
+      "accessCount": 1,
+      "lastAccessed": 1776584277148,
+      "type": "file"
+    },
+    {
+      "path": "ui/components.json",
+      "accessCount": 1,
+      "lastAccessed": 1776584281383,
+      "type": "file"
+    },
+    {
+      "path": "ui/tsconfig.json",
+      "accessCount": 1,
+      "lastAccessed": 1776584281799,
+      "type": "file"
+    },
+    {
+      "path": "ui/src/app/layout.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1776584284700,
+      "type": "file"
+    },
+    {
+      "path": "ui/src/components/SimulateForm.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1776584287341,
+      "type": "file"
+    },
+    {
+      "path": "ui/src/components/ChoroplethMap.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1776584290133,
+      "type": "file"
+    },
+    {
+      "path": "ui/src/components/AblationChart.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1776584290568,
+      "type": "file"
+    },
+    {
+      "path": "ui/src/components/SidePanels/IncomePanel.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1776584290969,
+      "type": "file"
+    },
+    {
+      "path": "ui/src/types/data.ts",
+      "accessCount": 1,
+      "lastAccessed": 1776584293537,
+      "type": "file"
+    },
+    {
+      "path": "ui/src/context/EventContext.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1776584293848,
+      "type": "file"
+    },
+    {
+      "path": "src/llm/bedrock_client.py",
+      "accessCount": 1,
+      "lastAccessed": 1776584329026,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}

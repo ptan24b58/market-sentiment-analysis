@@ -97,10 +97,12 @@ def _build_payload(
         # Bedrock silently ignores this if the model doesn't support caching.
         system_block["cache_control"] = {"type": "ephemeral"}
     # Claude Sonnet 4.5 rejects top_p + temperature together; keep temperature only.
+    # Bumped 0.7 -> 1.0 because Claude at 0.7 was collapsing persona variance
+    # (sentinel std 0.05-0.07 << 0.10 threshold). 1.0 widens the roleplay spread.
     return {
         "anthropic_version": "bedrock-2023-05-31",
         "max_tokens": 32,
-        "temperature": 0.7,
+        "temperature": 1.0,
         "system": [system_block],
         "messages": [
             {
