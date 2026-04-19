@@ -62,10 +62,28 @@
   --sentiment-mid: #fee08b;
   --sentiment-pos: #1a9850;
 
-  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-               "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-               "Liberation Mono", "Courier New", monospace;
+  /* Tone badges — paired bg/border/text per strength */
+  --tone-sneg-bg:     #7f1d1d;
+  --tone-sneg-border: #991b1b;
+  --tone-sneg-text:   #fca5a5;
+  --tone-neg-bg:      rgba(127, 29, 29, 0.6);
+  --tone-neg-border:  #991b1b;
+  --tone-neg-text:    #f87171;
+  --tone-pos-bg:      rgba(20, 83, 45, 0.6);
+  --tone-pos-border:  #166534;
+  --tone-pos-text:    #4ade80;
+  --tone-spos-bg:     #14532d;
+  --tone-spos-border: #166534;
+  --tone-spos-text:   #86efac;
+
+  /* Small sentinel badge (list variant) */
+  --sentinel-s-bg:   rgba(120, 53, 15, 0.4);
+  --sentinel-s-text: #fbbf24;
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system,
+               BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco,
+               Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 html,
