@@ -27,53 +27,53 @@
       "panel_used_correction": true
     },
     "nova_zero_shot": {
-      "ic_pearson": 0.15872202447447964,
-      "ic_pearson_pvalue": 0.34120052121929134,
-      "ic_spearman": 0.17402750649834128,
-      "ic_spearman_pvalue": 0.2960500783866106,
-      "panel_beta": 0.006228311656920419,
-      "panel_se_clustered": 0.0037646314688041865,
-      "panel_tstat": 1.65442798545665,
-      "panel_pvalue": 0.09804058420875394,
+      "ic_pearson": -0.13291222220614116,
+      "ic_pearson_pvalue": 0.42632561473349095,
+      "ic_spearman": -0.1884240323707569,
+      "ic_spearman_pvalue": 0.25725334121426685,
+      "panel_beta": -0.004394909061712122,
+      "panel_se_clustered": 0.005344567201253197,
+      "panel_tstat": -0.8223133691127696,
+      "panel_pvalue": 0.41089856978657857,
       "panel_n_obs": 38,
       "panel_n_clusters": 9,
       "panel_used_correction": true
     },
     "persona_only": {
-      "ic_pearson": 0.1252407131900808,
-      "ic_pearson_pvalue": 0.45373486698170173,
-      "ic_spearman": 0.14668667022635146,
-      "ic_spearman_pvalue": 0.37951055732880523,
-      "panel_beta": 0.008702412208002221,
-      "panel_se_clustered": 0.007194856928862825,
-      "panel_tstat": 1.2095323498500299,
-      "panel_pvalue": 0.22645839052184136,
+      "ic_pearson": -0.008757963718181161,
+      "ic_pearson_pvalue": 0.9583811407729133,
+      "ic_spearman": 0.004604514312037938,
+      "ic_spearman_pvalue": 0.9781119325791093,
+      "panel_beta": 0.00830424977761693,
+      "panel_se_clustered": 0.0214760005168394,
+      "panel_tstat": 0.386675804515163,
+      "panel_pvalue": 0.6989962306628137,
       "panel_n_obs": 38,
       "panel_n_clusters": 9,
       "panel_used_correction": true,
-      "mean_variance": 0.03190504312865497,
-      "mean_bimodality": 0.5457208973550832
+      "mean_variance": 0.020980603673684213,
+      "mean_bimodality": 0.7649957037947951
     },
     "persona_graph": {
-      "ic_pearson": 0.1252407131900808,
-      "ic_pearson_pvalue": 0.45373486698170173,
-      "ic_spearman": 0.14668667022635146,
-      "ic_spearman_pvalue": 0.37951055732880523,
-      "panel_beta": 0.008702412208002216,
-      "panel_se_clustered": 0.007194856928862823,
-      "panel_tstat": 1.2095323498500294,
-      "panel_pvalue": 0.22645839052184147,
+      "ic_pearson": -0.008757963718181216,
+      "ic_pearson_pvalue": 0.9583811407729133,
+      "ic_spearman": 0.004604514312037938,
+      "ic_spearman_pvalue": 0.9781119325791093,
+      "panel_beta": 0.00830424977761693,
+      "panel_se_clustered": 0.02147600051683936,
+      "panel_tstat": 0.38667580451516365,
+      "panel_pvalue": 0.6989962306628131,
       "panel_n_obs": 38,
       "panel_n_clusters": 9,
       "panel_used_correction": true,
-      "mean_variance": 0.014499082477677129,
-      "mean_bimodality": 0.8201182162280641
+      "mean_variance": 0.01388265327816857,
+      "mean_bimodality": 0.9060739518621435
     },
     "persona_graph_variance_signal": {
-      "ic_pearson": 0.01081422577058623,
-      "ic_pearson_pvalue": 0.948621259252465,
-      "ic_spearman": 0.04505846148208554,
-      "ic_spearman_pvalue": 0.7882245688725066,
+      "ic_pearson": -0.1071159933608744,
+      "ic_pearson_pvalue": 0.5221105696260053,
+      "ic_spearman": -0.060954998987930796,
+      "ic_spearman_pvalue": 0.7162029071135017,
       "note": "IC computed on |sentiment_variance| vs |AR|"
     }
   },
@@ -100,30 +100,30 @@
       "bootstrap_resamples": 1000
     },
     "nova_zero_shot": {
-      "sharpe": 0.180767019513058,
+      "sharpe": -0.21443722379156865,
       "sharpe_bootstrap_ci_95": [
-        -0.41092229429908617,
-        0.9484150116467769
+        -1.0455857333458498,
+        0.3703117714245218
       ],
       "n_top": 12,
       "n_bottom": 12,
       "bootstrap_resamples": 1000
     },
     "persona_only": {
-      "sharpe": 0.007682737028213154,
+      "sharpe": 0.07918764847287853,
       "sharpe_bootstrap_ci_95": [
-        -0.5885287614330037,
-        0.6440403999967286
+        -0.5823038717230538,
+        0.7000653092229978
       ],
       "n_top": 12,
       "n_bottom": 12,
       "bootstrap_resamples": 1000
     },
     "persona_graph": {
-      "sharpe": 0.007682737028213154,
+      "sharpe": 0.07918764847287853,
       "sharpe_bootstrap_ci_95": [
-        -0.5885287614330037,
-        0.6440403999967286
+        -0.5823038717230538,
+        0.7000653092229978
       ],
       "n_top": 12,
       "n_bottom": 12,
@@ -175,32 +175,32 @@
     "per_event": [
       {
         "event_id": "c0bd0424-7d94-469d-bf8f-9d8ff77b2534",
-        "n_personas": 300,
-        "n_valid": 300,
-        "variance": 0.0006749999999999997,
-        "std": 0.025980762113533153,
-        "mean": 0.995,
-        "bimodality_index": 0.8990324767363032,
-        "passes_threshold": false
-      },
-      {
-        "event_id": "a02aeca2-092e-4826-818b-2ada8216f1a2",
-        "n_personas": 300,
-        "n_valid": 300,
-        "variance": 0.019331555555555557,
-        "std": 0.1390379644397729,
-        "mean": 0.8013333333333333,
-        "bimodality_index": 0.42266121390053824,
+        "n_personas": 500,
+        "n_valid": 500,
+        "variance": 0.035949239999999986,
+        "std": 0.18960284807987454,
+        "mean": 0.5226,
+        "bimodality_index": 0.6537425091093947,
         "passes_threshold": true
       },
       {
+        "event_id": "a02aeca2-092e-4826-818b-2ada8216f1a2",
+        "n_personas": 500,
+        "n_valid": 500,
+        "variance": 0.0027789515999999985,
+        "std": 0.0527157623486562,
+        "mean": 0.68522,
+        "bimodality_index": 0.8858192186162813,
+        "passes_threshold": false
+      },
+      {
         "event_id": "26720693-12f3-4bf4-b2c4-769f888dbc44",
-        "n_personas": 300,
-        "n_valid": 300,
-        "variance": 0.028246555555555553,
-        "std": 0.16806711622311948,
-        "mean": 0.08033333333333334,
-        "bimodality_index": 0.798746058835135,
+        "n_personas": 500,
+        "n_valid": 500,
+        "variance": 0.005483960000000001,
+        "std": 0.07405376425273735,
+        "mean": 0.29019999999999996,
+        "bimodality_index": 0.9922347529961572,
         "passes_threshold": true
       }
     ],
@@ -211,7 +211,7 @@
     "gate_pass": true,
     "template_switch_recommended": false,
     "thresholds": {
-      "variance_min": 0.1,
+      "variance_min": 0.055,
       "events_required": 3,
       "passes_required": 2,
       "parse_failure_template_switch": 0.1
