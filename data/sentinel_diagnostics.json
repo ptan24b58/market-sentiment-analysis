@@ -2,40 +2,40 @@
   "per_event": [
     {
       "event_id": "c0bd0424-7d94-469d-bf8f-9d8ff77b2534",
-      "n_personas": 300,
-      "n_valid": 300,
-      "variance": 0.0006749999999999997,
-      "std": 0.025980762113533153,
-      "mean": 0.995,
-      "bimodality_index": 0.8990324767363032,
-      "passes_threshold": false
+      "n_personas": 500,
+      "n_valid": 500,
+      "variance": 0.034992909999999995,
+      "std": 0.18706391955692578,
+      "mean": 0.5297,
+      "bimodality_index": 0.9340927435137377,
+      "passes_threshold": true
     },
     {
       "event_id": "a02aeca2-092e-4826-818b-2ada8216f1a2",
-      "n_personas": 300,
-      "n_valid": 300,
-      "variance": 0.019331555555555557,
-      "std": 0.1390379644397729,
-      "mean": 0.8013333333333333,
-      "bimodality_index": 0.42266121390053824,
-      "passes_threshold": true
+      "n_personas": 500,
+      "n_valid": 500,
+      "variance": 0.0027806895999999987,
+      "std": 0.05273224440510757,
+      "mean": 0.68652,
+      "bimodality_index": 0.8965657579871473,
+      "passes_threshold": false
     },
     {
       "event_id": "26720693-12f3-4bf4-b2c4-769f888dbc44",
-      "n_personas": 300,
-      "n_valid": 300,
-      "variance": 0.028246555555555553,
-      "std": 0.16806711622311948,
-      "mean": 0.08033333333333334,
-      "bimodality_index": 0.798746058835135,
-      "passes_threshold": true
+      "n_personas": 500,
+      "n_valid": 500,
+      "variance": 0.005667840000000002,
+      "std": 0.075285058278519,
+      "mean": 0.2904,
+      "bimodality_index": 1.0000000000000007,
+      "passes_threshold": false
     }
   ],
   "parse_failure_rate": 0.0,
   "parse_retry_rate": 0.0,
-  "pass_count": 2,
+  "pass_count": 1,
   "pass_required": 2,
-  "gate_pass": true,
+  "gate_pass": false,
   "template_switch_recommended": false,
   "thresholds": {
     "variance_min": 0.1,
