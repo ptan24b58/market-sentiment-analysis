@@ -118,14 +118,15 @@ export default function ChoroplethMap({
       }
     }
 
-    // Layer 2: Region choropleth (GeoJsonLayer)
+    // Layer 2: Region choropleth (GeoJsonLayer) — borderless to avoid
+    // competing with the base map's street/city labels
     result.push(
       new GeoJsonLayer({
         id: 'regions',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         data: texasRegions as any,
         pickable: true,
-        stroked: true,
+        stroked: false,
         filled: true,
         autoHighlight: true,
         highlightColor: HIGHLIGHT_RGBA,
@@ -138,46 +139,17 @@ export default function ChoroplethMap({
           // 70% of base alpha to let the dark base tiles read through
           return [r, g, b, Math.round(a * 0.7)]
         },
-        getLineColor: BORDER_RGBA,
-        getLineWidth: 1.5,
-        lineWidthUnits: 'pixels',
-        lineWidthMinPixels: 1,
-        lineWidthMaxPixels: 2.5,
         updateTriggers: {
           getFillColor: [regionStats, showPostDynamics],
         },
         transitions: {
           getFillColor: 400,
-          getLineColor: 200,
         },
       })
     )
 
-    // Layer 3: Region name labels (TextLayer) — skip if centroids not loaded
-    if (centroids.length > 0) {
-      result.push(
-        new TextLayer<Centroid>({
-          id: 'region-labels',
-          data: centroids,
-          getPosition: (d) => [d.lon, d.lat],
-          getText: (d) => d.name.toUpperCase(),
-          getSize: 11,
-          getColor: LABEL_RGBA,
-          fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
-          fontWeight: 600,
-          characterSet: 'auto',
-          outlineWidth: 2.5,
-          outlineColor: HALO_RGBA,
-          fontSettings: { sdf: true, fontSize: 64 },
-          billboard: false,
-          getTextAnchor: 'middle',
-          getAlignmentBaseline: 'center',
-          sizeMinPixels: 10,
-          sizeMaxPixels: 13,
-          pickable: false,
-        })
-      )
-    }
+    // Layer 3 (region labels) intentionally omitted — the CartoDB base map
+    // already labels cities/regions, and stacked labels fight for attention.
 
     return result
   }, [regionStats, showPostDynamics])

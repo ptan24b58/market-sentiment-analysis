@@ -13,3 +13,4 @@
 {"t":0,"agent":"add7d97","agent_type":"executor","event":"agent_start","parent_mode":"none"}
 {"t":0,"agent":"a7d0247","agent_type":"executor","event":"agent_stop","success":true,"duration_ms":220077}
 {"t":0,"agent":"add7d97","agent_type":"executor","event":"agent_stop","success":true,"duration_ms":263145}
+{"t":0,"agent":"ac57042","agent_type":"unknown","event":"agent_stop","success":true}
